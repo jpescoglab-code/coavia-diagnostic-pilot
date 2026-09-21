@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>COAVIA English Foundation Diagnostic — 파일럿</title>
+<style>
+:root {
+  --bg: #EEF1F3; --paper: #FFFFFF; --ink: #16212B; --muted: #55636E; --line: #D3DADF;
+  --accent: #0E6B73; --accent-weak: #DDEFF0; --on-accent: #FFFFFF;
+  --ok: #1B7449; --ok-bg: #E2F3EA; --warn: #8F5400; --warn-bg: #FBEEDA; --bad: #A93229; --bad-bg: #F8E2E0;
+  box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10181E; --paper: #182229; --ink: #E6ECF0; --muted: #9DABB5; --line: #2D3B45;
+    --accent: #5CC5CF; --accent-weak: #1B3A3F; --on-accent: #0B1A1D;
+    --ok: #74D0A2; --ok-bg: #17352A; --warn: #EBB960; --warn-bg: #3A2D14; --bad: #F2908A; --bad-bg: #3C1E1C;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Segoe UI", sans-serif; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 20px 18px 80px; }
+h1 { font-size: 1.35rem; margin: 0 0 4px; }
+h2 { font-size: 1.1rem; margin: 22px 0 8px; }
+p { margin: 0 0 10px; }
+.sub { color: var(--muted); font-size: .92rem; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; }
+.topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; color: var(--muted); font-size: .92rem; }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 18px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+.btn { font: inherit; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 9px; padding: 10px 18px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible + .opt-body { outline: 3px solid var(--accent); outline-offset: 2px; }
+label.field { display: block; margin: 12px 0; font-weight: 600; }
+label.field input[type=text], label.field select { display: block; margin-top: 4px; font: inherit; width: 100%; max-width: 360px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); }
+.radios label, .checks label { display: block; margin: 6px 0; font-weight: 400; cursor: pointer; }
+.consent { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; background: var(--bg); font-size: .95rem; }
+.consent h3 { margin: 12px 0 4px; font-size: 1rem; }
+.err { color: var(--bad); font-weight: 600; }
+.grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 26px; align-items: start; }
+.grid.single { grid-template-columns: minmax(0, 760px); }
+.passage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 24px 26px; font-family: Georgia, "Times New Roman", serif; font-size: 1.08rem; line-height: 1.8; }
+.passage p { margin: 0 0 .9em; max-width: 62ch; } .passage p:last-child { margin-bottom: 0; }
+.ptitle { font-size: 1.15rem; margin: 0 0 .7em; }
+.player { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.pstat { margin: 10px 0 0; min-height: 1.6em; } .pstat.bad { color: var(--bad); font-weight: 600; }
+.item { padding: 4px 0 22px; border-bottom: 1px solid var(--line); margin-bottom: 20px; } .item:last-child { border-bottom: 0; }
+.qhead { display: flex; gap: 14px; align-items: baseline; }
+.qno { font-size: 1.6rem; font-weight: 700; color: var(--accent); min-width: 2.2ch; }
+.qen { font-weight: 600; font-size: 1.04rem; }
+.ind { margin-left: calc(2.2ch + 14px); }
+.sent { margin: 10px 0 0 calc(2.2ch + 14px); font-family: Georgia, "Times New Roman", serif; font-size: 1.14rem; line-height: 1.7; padding: 10px 14px; background: var(--paper); border-left: 4px solid var(--accent); border-radius: 0 6px 6px 0; }
+.blank { display: inline-block; min-width: 4.5em; border-bottom: 2px solid var(--ink); margin: 0 2px; vertical-align: -1px; }
+.opts { margin: 12px 0 0 calc(2.2ch + 14px); display: grid; gap: 8px; }
+.opt { display: block; position: relative; } .opt input { position: absolute; opacity: 0; pointer-events: none; }
+.opt-body { display: grid; grid-template-columns: 2rem 1fr; gap: 10px; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 11px 13px; cursor: pointer; }
+.opt-body .lt { font-weight: 700; color: var(--muted); }
+.opt input:checked + .opt-body { border-color: var(--accent); background: var(--accent-weak); } .opt input:checked + .opt-body .lt { color: var(--accent); }
+.chips { margin: 12px 0 0 calc(2.2ch + 14px); display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.chip-w { font: inherit; font-size: 1.08rem; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; }
+.chip-w[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-weak); font-weight: 600; }
+.slots { margin: 12px 0 0 calc(2.2ch + 14px); min-height: 3.4rem; border: 2px dashed var(--line); border-radius: 10px; padding: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--paper); }
+.slots .ph { color: var(--muted); padding: 0 6px; }
+.pool { margin: 10px 0 0 calc(2.2ch + 14px); display: flex; flex-wrap: wrap; gap: 8px; }
+.tile { font: inherit; font-size: 1.08rem; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 9px 15px; cursor: pointer; }
+.tile.used { opacity: .3; }
+.segrow { margin: 12px 0 0 calc(2.2ch + 14px); display: flex; flex-wrap: wrap; gap: 8px; }
+.seg-b { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; cursor: pointer; text-align: left; }
+.seg-b b { color: var(--muted); margin-right: 6px; } .seg-b[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-weak); }
+.seg-b[disabled] { cursor: default; }
+.fixhead { margin: 14px 0 0 calc(2.2ch + 14px); font-weight: 600; }
+textarea.ans { width: 100%; max-width: 640px; font: inherit; font-size: 1.1rem; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); min-height: 84px; }
+.nav { margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.banner { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; font-size: .92rem; }
+.unclear-list { max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; background: var(--paper); }
+.unclear-list label { display: block; margin: 5px 0; cursor: pointer; }
+@media (max-width: 820px) { .grid { grid-template-columns: 1fr; } .passage, .player { position: static; padding: 18px; } .opts, .sent, .chips, .slots, .pool, .segrow, .fixhead, .ind { margin-left: 0; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+'use strict';
+/* ===================== 배포 전에 바꿀 설정 ===================== */
+var CONFIG = {
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbyW_3XSpYyJUpBfLjzZ7OkCSp3lGafgSa-4ZnM1ajnZlVeYa2TPpjf5mj4oqoVH7ITs7g/exec',  // Apps Script 웹 앱 URL (README 참고)
+  TOKEN: 'COAVIA_PILOT_2026_X7M4K9Q2',                         // Code.gs의 TOKEN과 같은 값
+  PAGE_VERSION: 'pilot-v1.0',
+  CONSENT_VERSION: 'consent-v1 (2026-09)',
+  RETENTION_MONTHS: 6,
+  CONTACT: 'coaviainfo@gmail.com',             // 예: 담당 선생님 이름과 전화번호 또는 이메일
+  EST_MINUTES: '40'
+};
+
+/* ===================== 문항 데이터 (정답 없음) ===================== */
+var UNITS = [{"sec":"VOC","kind":"item","items":[{"no":1,"type":"mc","stem_en":"Choose the best word for the blank.","options":["cook","wash","write","drink"],"sentence":"My hands are dirty, so I need to ____ them."}]},{"sec":"VOC","kind":"item","items":[{"no":2,"type":"rs","stem_en":"Select the real English words.","words":["nustal","invite","plorin","vemish","usual","cavlen","almost","tremic"]}]},{"sec":"VOC","kind":"item","items":[{"no":3,"type":"mc","stem_en":"Choose the best word for the blank.","options":["common","similar","available","effective"],"sentence":"The new medicine is ____ because it stopped my headache quickly."}]},{"sec":"VOC","kind":"item","items":[{"no":4,"type":"mc","stem_en":"Choose the best word for the blank.","options":["contribute","provide","supply","offer"],"sentence":"Regular exercise can ____ to better sleep at night."}]},{"sec":"VOC","kind":"item","items":[{"no":5,"type":"rs","stem_en":"Select the real English words.","words":["brastive","presence","approval","pelmory","requirement","appropriate","clariment","principle"]}]},{"sec":"VOC","kind":"item","items":[{"no":6,"type":"mc","stem_en":"Choose the best word for the blank.","options":["repeated","supported","qualified","rejected"],"sentence":"The final sentence ____ the earlier statement by adding two limits."}]},{"sec":"GRA","kind":"item","items":[{"no":7,"type":"mc","stem_en":"Choose the correct answer.","options":["eat","eating","are eating","eats"],"sentence":"My brother ____ breakfast at home every morning."}]},{"sec":"GRA","kind":"item","items":[{"no":8,"type":"mc","stem_en":"Choose the correct answer.","options":["have seen","saw","see","am seeing"],"sentence":"I ____ that movie last Saturday, so I know the ending."}]},{"sec":"GRA","kind":"item","items":[{"no":9,"type":"mc","stem_en":"Choose the correct answer.","options":["will stay","stayed","have stayed","would stay"],"sentence":"If it rains tomorrow, we ____ at home."}]},{"sec":"GRA","kind":"item","items":[{"no":10,"type":"mc","stem_en":"Choose the correct answer.","options":["was seeing","have seen","had seen","would see"],"sentence":"Anna asked whether I ____ the message she had sent the day before."}]},{"sec":"GRA","kind":"item","items":[{"no":11,"type":"mc","stem_en":"Choose the correct answer.","options":["making","to make","to making","make"],"sentence":"The new system is expected ____ the process easier for everyone."}]},{"sec":"GRA","kind":"item","items":[{"no":12,"type":"mc","stem_en":"Choose the correct answer.","options":["are","have","has","is"],"sentence":"The quality of the materials in these shoes ____ excellent."}]},{"sec":"REA","kind":"passage","id":"R-P1","text":"Library Notice\n\nThe school library will close early this Friday. There is a teachers' meeting. You can use the library from 8:30 a.m. to 3:00 p.m. Please bring back your books before 3:00 p.m. The study room will close at 3:00 p.m., too. The library will open again on Monday at 8:30 a.m. You can still use the library website.","items":[{"no":13,"type":"mc","stem_en":"What is this notice about?","options":["A library event","A change in library hours","How to use the library website","A teachers' meeting"]},{"no":14,"type":"mc","stem_en":"When will the library open again?","options":["Friday at 3:00 p.m.","Friday at 8:30 a.m.","Monday at 8:30 a.m.","Monday at 3:00 p.m."]}]},{"sec":"REA","kind":"passage","id":"R-P2","text":"Dear volunteers,\n\nThank you for signing up for our park clean-up this Saturday. The weather report says heavy rain is likely in the morning, so we have changed the starting time from 9:00 a.m. to 1:00 p.m. We will still meet at the main gate of Green Park. Please bring a water bottle and wear old clothes and comfortable shoes. Gloves and trash bags will be provided. If the rain continues into the afternoon, the event will not happen, and we will send everyone a message by 11:00 a.m. We hope the new time will allow more people to join us.","items":[{"no":15,"type":"mc","stem_en":"What is the main purpose of this email?","options":["To tell volunteers about a change to the event","To ask volunteers to bring more cleaning supplies","To invite volunteers to a different park event","To explain why Green Park needs more volunteers"]},{"no":16,"type":"mc","stem_en":"Which statement is NOT true according to the email?","options":["The event will now start at 1:00 p.m.","Volunteers will meet at Green Park's main gate.","Volunteers should bring water and wear comfortable shoes.","Everyone will get a message after 1:00 p.m."]}]},{"sec":"REA","kind":"passage","id":"R-P3","text":"School Roof Garden Finds More Uses\n\nLast spring, Westfield Secondary School turned part of an empty roof into a small garden. The project began because science teachers wanted students to study plants outside the classroom. So the school built six large plant boxes and a simple watering system. At first, only two classes used the garden, but interest grew after students shared photos and short reports on the school website. By autumn, students from the cooking club were growing plants for cooking there, and an art class was using the space to draw plants. The garden also became a meeting place at lunch, although students still need a teacher to be present. This year, the school plans to add more plant boxes because several groups have asked to use the space. However, the school will not open the roof to everyone at all times; teachers say the area is small and safety rules must still be followed. The school is now considering whether similar projects could work in other empty areas.","items":[{"no":17,"type":"mc","stem_en":"Why does the school plan to add more plant boxes this year?","options":["Several groups have asked to use the garden.","Teachers want fewer students to use the roof.","The cooking club needs more space than the art class.","Students have complained about the garden on the website."]},{"no":18,"type":"mc","stem_en":"What can most reasonably be inferred about the roof garden?","options":["The garden can support every subject taught at the school.","The school plans to remove most rules for using the roof.","The garden is popular, but access to it is still limited.","The school has already created similar gardens in other areas."]}]},{"sec":"REA","kind":"passage","id":"R-P4","text":"When More Choice Becomes Less Helpful\n\nPeople often think that having more choices makes a decision easier because it gives them a better chance of finding exactly what they want. That is sometimes true, especially when the options are clearly different and the decision is simple. However, a long list of similar choices can create a different problem: people may spend more time comparing small differences than deciding what actually matters to them.\n\nImagine a student choosing an online course from a list of thirty classes that all cover nearly the same topic. The student may begin by comparing useful points such as price, schedule, and course level. After a while, though, attention may move to small details, such as the color of a website or the exact length of each video. The extra choices have not necessarily improved the decision; instead, they have added more information that the student must sort through. This example shows why more options can sometimes make a simple choice feel harder.\n\nStill, the answer is not to remove choice completely. A smaller set of well-organized options can help people compare important differences without feeling that they must examine everything. For that reason, the most useful system may be one that offers enough variety for different needs while also helping people focus on the few differences that matter most.","items":[{"no":19,"type":"mc","stem_en":"What is the main function of the second paragraph?","options":["To show that having many choices usually leads to better decisions","To show how extra options can make a simple decision harder","To explain which details students should compare before choosing a course","To describe why online courses often have similar prices and schedules"]},{"no":20,"type":"mc","stem_en":"Which conclusion is best supported by both the first and third paragraphs?","options":["A smaller set is useful because people can compare more minor details.","Similar choices become easier when people spend more time comparing them.","Organizing choices mainly helps people who already know what they want.","A larger set may still work when choices are organized around key differences."]}]},{"sec":"LIS","kind":"clip","id":"L-C1","tts":"Hello, art club students. Today's meeting is in a new place. It is not in Room twelve. Another class is using that room. Please come to the school library at four fifteen. Bring a pen. The meeting ends at five o'clock. Your parents can wait outside the library.","plays":1,"items":[{"no":21,"type":"mc","stem_en":"What is this message about?","options":["A new school library","A meeting for parents","An art class in Room 12","A change to an art club meeting"]},{"no":22,"type":"mc","stem_en":"What time should students come to the library?","options":["4:00 p.m.","4:15 p.m.","5:00 p.m.","5:15 p.m."]}]},{"sec":"LIS","kind":"clip","id":"L-C2","tts":"Good afternoon, everyone. This is an update about Saturday's school book fair. The fair will still take place in the main hall. Doors open at one thirty in the afternoon, so visitors can look around before the first talk. The guest speaker's talk was planned for two o'clock, but now it starts at two thirty. The speaker needs extra travel time because her train is late. The used-book sale begins at three o'clock as planned. Please bring cash because some tables cannot accept cards. Students helping at the fair should meet at the front desk. Please check the school website tonight for any further updates.","plays":1,"items":[{"no":23,"type":"mc","stem_en":"What is the main purpose of this announcement?","options":["To announce a change to the book fair","To invite students to sell books","To explain how to pay by card","To describe the guest speaker's books"]},{"no":24,"type":"mc","stem_en":"What time will the guest speaker's talk start?","options":["1:30 p.m.","2:00 p.m.","2:30 p.m.","3:00 p.m."]}]},{"sec":"LIS","kind":"dict","id":"D-1","tts":"The concert has moved indoors because heavy rain continues.","plays":2,"items":[{"no":25,"type":"dict","stem_en":"Listen and type the sentence you hear."}]},{"sec":"LIS","kind":"clip","id":"L-C3","tts":"People often make long task lists because writing everything down feels organized. I’d suggest a different approach: choose three tasks that matter most, and leave the rest for later. For example, imagine a student preparing for a busy evening. She needs to finish a report, answer several messages, buy groceries, and clean her room. She chooses the report, the groceries, and one important message as her priorities. Surprisingly, the shorter list helps her start sooner because she does not keep deciding what to do next. After those tasks are done, she checks the longer list again. However, a short list is not perfect for every day. An unexpected problem may appear, or one task may take much longer than expected. That said, I would not treat the rule of three tasks as strict. It is better used as a flexible guide that helps you focus while still allowing plans to change.","plays":1,"items":[{"no":26,"type":"mc","stem_en":"What does the student do after finishing her three main tasks?","options":["Goes back to her longer list","Cleans her room next","Buys the groceries first","Answers several messages"]},{"no":27,"type":"mc","stem_en":"What is the speaker's view of this method?","options":["It should be followed every single day","It only works if nothing goes wrong","It is helpful, but not always suitable","It is mainly useful for students"]}]},{"sec":"LIS","kind":"dict","id":"D-2","tts":"The sample, which was tested carefully, remained stable after transport.","plays":2,"items":[{"no":28,"type":"dict","stem_en":"Listen and type the sentence you hear."}]},{"sec":"SB","kind":"item","items":[{"no":29,"type":"order","stem_en":"Put the words in the correct order.","tiles":["blue","She","jacket.","wearing","a","is"]}]},{"sec":"SB","kind":"item","items":[{"no":30,"type":"order","stem_en":"Put the words in the correct order.","tiles":["take?","the","does","ride","How","train","long"]}]},{"sec":"SB","kind":"item","items":[{"no":31,"type":"order","stem_en":"Put the words in the correct order.","tiles":["the","without","Although","difficulty.","wet,","road","bus","arrived","was","the"]}]},{"sec":"SB","kind":"item","items":[{"no":32,"type":"order","stem_en":"Put the words in the correct order.","tiles":["agree","Only","the","sign","after","she","to","did","checking","details","form.","the"]}]},{"sec":"SB","kind":"item","items":[{"no":33,"type":"err","stem_en":"Find the mistake.","fix_stem_en":"Choose the correct fix.","segments":[{"label":"A","text":"For 2023,"},{"label":"B","text":"my sister has worked"},{"label":"C","text":"at the same hotel"},{"label":"D","text":"and still enjoys it."}],"fix_options":[{"label":"A","text":"During 2023,"},{"label":"B","text":"Until 2023,"},{"label":"C","text":"Before 2023,"},{"label":"D","text":"Since 2023,"}]}]},{"sec":"SB","kind":"item","items":[{"no":34,"type":"err","stem_en":"Find the mistake.","fix_stem_en":"Choose the correct fix.","segments":[{"label":"A","text":"The class teaches students"},{"label":"B","text":"how to set goals,"},{"label":"C","text":"solve problems, and communicating clearly"},{"label":"D","text":"during group work."}],"fix_options":[{"label":"A","text":"solving problems, and communicate clearly"},{"label":"B","text":"solve problems, and communicate clearly"},{"label":"C","text":"solve problems, and communicated clearly"},{"label":"D","text":"solve problems, and communicating clearly"}]}]}];
+
+var SEC = {
+  VOC: { title: '어휘', range: '1–6번', text: '빈칸에 알맞은 단어를 고르거나, 실제 영어 단어를 모두 고르는 문제입니다.' },
+  GRA: { title: '문법', range: '7–12번', text: '빈칸에 알맞은 답을 고르는 문제입니다.' },
+  REA: { title: '읽기', range: '13–20번', text: '지문을 읽고 문제에 답하세요. 한 지문에 문제가 2개씩 있습니다.' },
+  LIS: { title: '듣기', range: '21–28번', text: '소리를 듣고 답하세요. 대화·안내 듣기는 한 번만 들을 수 있고, 받아쓰기는 두 번 들을 수 있습니다. 재생 버튼을 누르면 바로 시작합니다. 소리가 나오지 않으면 손을 들어 선생님께 알려 주세요.' },
+  SB: { title: '문장 만들기', range: '29–34번', text: '단어를 눌러 문장을 만들거나, 문장에서 틀린 부분을 찾아 고치는 문제입니다.' }
+};
+var RATE = { 'L-C1': 0.85, 'L-C2': 0.95, 'L-C3': 1.0, 'D-1': 0.9, 'D-2': 0.9, 'SOUND': 0.9 };
+var GRADES = ['초등 5학년 이하', '초등 6학년', '중1', '중2', '중3', '고1', '고2', '고3', '대학생', '성인'];
+var GOALS = ['DET', 'TOEFL', 'SAT', '일반영어', '아직 모름'];
+var UNDER14 = ['초등 5학년 이하', '초등 6학년', '중1'];
+var STORE = 'coavia_pilot_state_v1', PENDING = 'coavia_pilot_pending_v1';
+
+/* ===================== 유틸 ===================== */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function uuid() { var a = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(a); return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+function lsGet(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+var TEACHER = /[?&]t=1/.test(location.search);
+
+/* ===================== 흐름 ===================== */
+var FLOW = [], ITEMS = {};
+(function () {
+  var prev = null;
+  UNITS.forEach(function (u) {
+    if (u.sec !== prev) { FLOW.push({ t: 'sec', sec: u.sec }); prev = u.sec; }
+    FLOW.push({ t: 'unit', u: u });
+    u.items.forEach(function (it) { ITEMS[it.no] = it; });
+  });
+})();
+
+function fresh() {
+  return { v: 1, sid: uuid(), stage: 'intro', code: '', grade: '', goal: '', guardian: '', pos: 0, R: {}, T: {}, U: {}, P: {}, audio: [], clip: {}, failed: {}, sound: '', startedAt: null, unclear: [], sent: { start: false, finish: false } };
+}
+var S = lsGet(STORE, null), resumeOffer = false;
+if (S && S.stage !== 'intro' && S.stage !== 'done' && S.code) resumeOffer = true; else S = fresh();
+var uStart = Date.now(), formErr = '', sendStatus = '', finishing = false;
+function save() { lsSet(STORE, S); }
+
+/* ===================== 서버 전송 ===================== */
+function gasReady() { return CONFIG.GAS_URL && !/PASTE_/.test(CONFIG.GAS_URL); }
+function envInfo() { return { user_agent: navigator.userAgent, screen: screen.width + 'x' + screen.height + ' @' + (window.devicePixelRatio || 1) }; }
+async function post(payload) {
+  var body = JSON.stringify(Object.assign({ token: CONFIG.TOKEN, session_id: S.sid, participant_code: S.code }, payload));
+  if (!gasReady()) { var q = lsGet(PENDING, []); q.push(JSON.parse(body)); lsSet(PENDING, q); return { ok: false, mode: 'test' }; }
+  for (var i = 0; i < 3; i++) {
+    try {
+      var r = await fetch(CONFIG.GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body });
+      var j = await r.json();
+      if (j && j.ok) return { ok: true };
+    } catch (e) {}
+    await sleep(700 * (i + 1));
+  }
+  try { await fetch(CONFIG.GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body }); } catch (e) {}
+  var q2 = lsGet(PENDING, []); q2.push(JSON.parse(body)); lsSet(PENDING, q2);
+  return { ok: false, opaque: true };
+}
+async function flushPending() {
+  if (!gasReady()) return;
+  var q = lsGet(PENDING, []), keep = [];
+  for (var i = 0; i < q.length; i++) {
+    try { var r = await fetch(CONFIG.GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(q[i]) }); var j = await r.json(); if (!(j && j.ok)) keep.push(q[i]); } catch (e) { keep.push(q[i]); }
+  }
+  lsSet(PENDING, keep);
+}
+
+/* ===================== 듣기 재생 ===================== */
+function synthOk() { return 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance !== 'undefined'; }
+function pickVoice() { try { var vs = (speechSynthesis.getVoices() || []).filter(function (v) { return /^en/i.test(v.lang); }); return vs.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0] || vs[0] || null; } catch (e) { return null; } }
+function chunksOf(t) { var x = String(t).replace(/([ap])\.m\.(\s+)(?=[A-Z])/g, '$1m.$2').replace(/([ap])\.m\./g, '$1m'); return (x.match(/[^.!?]+[.!?]+/g) || [t]).map(function (s) { return s.trim(); }); }
+function alog(clip, ev, extra) { var o = { clip: clip, ev: ev, ts: new Date().toISOString() }; if (extra) for (var k in extra) o[k] = extra[k]; S.audio.push(o); save(); }
+function cs(id) { return S.clip[id] || (S.clip[id] = { played: 0, status: 'idle', fails: 0 }); }
+var live = {};
+function playClip(id, text, limit) {
+  var st = cs(id);
+  if (!synthOk()) { st.status = 'unsupported'; alog(id, 'unsupported'); save(); refreshPlayer(id); return; }
+  if ((limit && st.played >= limit) || st.status === 'playing' || st.status === 'loading') return;
+  var chunks = chunksOf(text), rate = RATE[id] || 0.95, voice = pickVoice(), started = false, i = 0, t0 = Date.now();
+  st.status = 'loading'; alog(id, 'play_click', { detail: 'attempt ' + (st.fails + st.played + 1) });
+  var watchdog = setTimeout(function () {
+    if (!started && st.status === 'loading') { st.status = 'error'; st.fails++; try { speechSynthesis.cancel(); } catch (e) {} alog(id, 'error', { detail: 'watchdog: no start in 4s' }); save(); refreshPlayer(id); }
+  }, 4000);
+  function next() {
+    if (st.status === 'error' || st.status === 'interrupted' || st.status === 'idle') return;
+    var u = new window.SpeechSynthesisUtterance(chunks[i]);
+    u.lang = voice ? voice.lang : 'en-US'; if (voice) u.voice = voice; u.rate = rate;
+    u.onstart = function () { if (!started) { started = true; clearTimeout(watchdog); st.played++; st.status = 'playing'; live[id] = Date.now(); alog(id, 'start', { voice: voice ? voice.name : 'default', lang: u.lang, rate: rate, elapsed_ms: Date.now() - t0 }); save(); refreshPlayer(id); } };
+    u.onend = function () { i++; if (i < chunks.length) setTimeout(next, 350); else { st.status = 'done'; alog(id, 'end', { duration_ms: Date.now() - live[id], voice: voice ? voice.name : 'default', rate: rate }); save(); refreshPlayer(id); } };
+    u.onerror = function (e) { if (e && e.error === 'canceled') return; clearTimeout(watchdog); st.status = started ? 'interrupted' : 'error'; if (!started) st.fails++; alog(id, 'error', { detail: (e && e.error) || 'unknown' }); save(); refreshPlayer(id); };
+    speechSynthesis.speak(u);
+  }
+  try { speechSynthesis.cancel(); } catch (e) {}
+  refreshPlayer(id); setTimeout(next, 80);
+}
+function playerInner(id, text, limit) {
+  var st = cs(id), left = limit ? limit - st.played : 99, canPlay = synthOk() && left > 0 && st.status !== 'playing' && st.status !== 'loading' && !S.failed[id];
+  var msg = { idle: limit ? '재생 버튼을 누르면 시작합니다. 남은 재생 횟수: ' + left + '회' : '재생 버튼을 누르세요.', loading: '재생을 준비하고 있습니다.', playing: '재생 중입니다.', done: left > 0 ? '재생이 끝났습니다. 남은 재생 횟수: ' + left + '회' : '재생이 끝났습니다. 더 이상 재생할 수 없습니다.',
+    interrupted: '재생이 중단되었습니다.', error: '재생이 시작되지 않았습니다. 다시 시도해 보세요. 재생 횟수는 차감되지 않았습니다.', unsupported: '이 브라우저는 소리 재생을 지원하지 않습니다. Chrome이나 Safari로 다시 열어 주세요.' }[st.status] || '';
+  if (S.failed[id]) msg = '소리 재생 실패로 기록되었습니다. 다음으로 넘어가세요.';
+  var h = '<button class="btn primary" data-act="play" data-id="' + esc(id) + '"' + (canPlay ? '' : ' disabled') + '>' + (st.played ? '한 번 더 재생' : st.status === 'error' ? '다시 시도' : '재생') + '</button>';
+  if (st.status === 'interrupted') msg += ' 이 듣기 문항은 미측정으로 처리됩니다.';
+  h += '<p class="pstat' + ((st.status === 'error' || st.status === 'unsupported' || st.status === 'interrupted') ? ' bad' : '') + '" role="status" aria-live="polite">' + esc(msg) + '</p>';
+  if ((st.fails >= 1 || st.status === 'unsupported') && st.played === 0 && !S.failed[id] && id !== 'SOUND') h += '<button class="btn" data-act="failaudio" data-id="' + esc(id) + '">소리가 나오지 않아요 (넘어가기)</button>';
+  return h;
+}
+function playerHtml(id, text, limit, title) { return '<div class="player"><b>' + esc(title) + '</b><div id="pl-' + esc(id) + '" style="margin-top:10px">' + playerInner(id, text, limit) + '</div></div>'; }
+function refreshPlayer(id) {
+  var el = document.getElementById('pl-' + id); if (!el) return;
+  var u = curUnit(); var text = id === 'SOUND' ? 'Hello. This is a sound check. If you can hear this voice, press the button that says you can hear it.' : (u && u.tts), limit = id === 'SOUND' ? 0 : (u && u.plays);
+  el.innerHTML = playerInner(id, text, limit);
+}
+
+/* ===================== 문항 렌더링 ===================== */
+function curFlow() { return FLOW[S.pos]; }
+function curUnit() { var f = curFlow(); return f && f.t === 'unit' ? f.u : null; }
+function stripMarks(t) { return String(t).replace(/\[\d+\]\s*/g, ''); }
+function passageHtml(u) {
+  var paras = stripMarks(u.text).split(/\n\s*\n/);
+  return '<article class="passage" aria-label="지문">' + paras.map(function (t, i) { var title = i === 0 && paras.length > 1 && !/[.!?,:]\s*$/.test(t.trim()); return title ? '<h3 class="ptitle">' + esc(t) + '</h3>' : '<p>' + esc(t).replace(/\n/g, '<br>') + '</p>'; }).join('') + '</article>';
+}
+function head(it) { return '<div class="qhead"><div class="qno">' + it.no + '</div><div class="qen">' + esc(it.stem_en) + '</div></div>'; }
+function mcHtml(it) {
+  var h = '<section class="item" aria-label="' + it.no + '번">' + head(it);
+  if (it.sentence) h += '<div class="sent">' + esc(it.sentence).replace(/_{2,}/g, '<span class="blank" aria-label="빈칸"></span>') + '</div>';
+  h += '<div class="opts" role="radiogroup" aria-label="' + it.no + '번 보기">';
+  it.options.forEach(function (o, i) { var L = 'ABCD'[i]; h += '<label class="opt"><input type="radio" name="q' + it.no + '" value="' + L + '" data-act="pick" data-no="' + it.no + '"' + (S.R[it.no] === L ? ' checked' : '') + '><span class="opt-body"><span class="lt">' + L + '</span><span>' + esc(o) + '</span></span></label>'; });
+  return h + '</div></section>';
+}
+function shuffled(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); for (var j = n - 1; j > 0; j--) { var k = Math.floor(Math.random() * (j + 1)), t = a[j]; a[j] = a[k]; a[k] = t; } return a; }
+function rsHtml(it) {
+  if (!S.P[it.no]) { S.P[it.no] = shuffled(it.words.length); save(); }
+  var sel = S.R[it.no] || {};
+  return '<section class="item" aria-label="' + it.no + '번">' + head(it) + '<div class="chips" role="group" aria-label="단어 선택">' + S.P[it.no].map(function (i) { var w = it.words[i]; return '<button class="chip-w" data-act="rs" data-no="' + it.no + '" data-w="' + esc(w) + '" aria-pressed="' + !!sel[w] + '">' + esc(w) + '</button>'; }).join('') + '</div></section>';
+}
+function orderHtml(it) {
+  if (!S.P[it.no]) { S.P[it.no] = shuffled(it.tiles.length); save(); }
+  var sel = S.R[it.no] || [];
+  var h = '<section class="item" aria-label="' + it.no + '번">' + head(it);
+  h += '<div class="slots" aria-label="만든 문장">' + (sel.length ? sel.map(function (i, pos) { return '<button class="tile" data-act="orm" data-no="' + it.no + '" data-pos="' + pos + '">' + esc(it.tiles[i]) + '</button>'; }).join('') : '<span class="ph">아래 단어를 차례로 눌러 문장을 만드세요.</span>') + '</div>';
+  h += '<div class="pool" role="group" aria-label="단어 카드">' + S.P[it.no].map(function (i) { var used = sel.indexOf(i) >= 0; return '<button class="tile' + (used ? ' used' : '') + '" data-act="oadd" data-no="' + it.no + '" data-i="' + i + '"' + (used ? ' disabled' : '') + '>' + esc(it.tiles[i]) + '</button>'; }).join('') + '</div>';
+  return h + '<div class="nav ind"><button class="btn" data-act="oclr" data-no="' + it.no + '">처음부터</button></div></section>';
+}
+function errHtml(it) {
+  var r = S.R[it.no] || {}, lock = !!r.lock, h = '<section class="item" aria-label="' + it.no + '번">' + head(it);
+  h += '<div class="segrow" role="group" aria-label="문장 구간">' + it.segments.map(function (sg) { return '<button class="seg-b" data-act="e1" data-no="' + it.no + '" data-l="' + esc(sg.label) + '" aria-pressed="' + (r.s1 === sg.label) + '"' + (lock ? ' disabled' : '') + '><b>' + esc(sg.label) + '</b>' + esc(sg.text) + '</button>'; }).join('') + '</div>';
+  if (!lock) h += '<div class="nav ind"><button class="btn primary" data-act="elock" data-no="' + it.no + '"' + (r.s1 ? '' : ' disabled') + '>1단계 확정</button><span class="sub">확정하면 되돌릴 수 없습니다.</span></div>';
+  else {
+    var seg = it.segments.filter(function (x) { return x.label === r.s1; })[0] || {};
+    h += '<div class="fixhead">' + esc(it.fix_stem_en) + '</div>';
+    h += '<div class="opts" role="radiogroup" aria-label="수정 보기">' + it.fix_options.map(function (f) { return '<label class="opt"><input type="radio" name="f' + it.no + '" value="' + esc(f.label) + '" data-act="e2" data-no="' + it.no + '"' + (r.s2 === f.label ? ' checked' : '') + '><span class="opt-body"><span class="lt">' + esc(f.label) + '</span><span>' + esc(f.text) + '</span></span></label>'; }).join('') + '</div>';
+  }
+  return h + '</section>';
+}
+function dictHtml(it) {
+  return '<section class="item" aria-label="' + it.no + '번">' + head(it) + '<div class="ind"><p class="sub">대소문자와 문장부호는 채점하지 않습니다.</p><textarea class="ans" data-act="dict" data-no="' + it.no + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="받아쓰기 답안">' + esc(S.R[it.no] || '') + '</textarea></div></section>';
+}
+function itemHtml(it) { return it.type === 'rs' ? rsHtml(it) : it.type === 'order' ? orderHtml(it) : it.type === 'err' ? errHtml(it) : it.type === 'dict' ? dictHtml(it) : mcHtml(it); }
+
+function progressHtml() {
+  var u = curUnit(); if (!u) return '';
+  var nos = u.items.map(function (i) { return i.no; }), last = nos[nos.length - 1];
+  return '<div class="topbar"><span>' + esc(SEC[u.sec].title) + ' · ' + (nos.length > 1 ? nos[0] + '–' + last : nos[0]) + '번 / 34</span><span>참가 코드 ' + esc(S.code) + '</span></div><div class="bar"><i style="width:' + Math.round((nos[0] - 1) / 34 * 100) + '%"></i></div>';
+}
+
+/* ===================== 화면 ===================== */
+function consentHtml() {
+  return '<div class="consent" tabindex="0" aria-label="개인정보 수집·이용 동의 안내">' +
+  '<h3>1. 목적</h3><p>새 영어 진단 시험의 문항 난이도와 채점 기준을 점검하고 개선하기 위해서입니다. 학생의 성적이나 평가에는 쓰이지 않습니다.</p>' +
+  '<h3>2. 수집 항목</h3><p>참가 코드, 학년, 목표 시험, 문항별 답안과 풀이 시간, 듣기 재생 기록(재생 시작·종료 시각, 오류), 사용한 기기와 브라우저 종류, 동의 기록. <b>실명, 연락처, 나이는 수집하지 않습니다.</b></p>' +
+  '<h3>3. 이용 방법</h3><p>문항 검증과 점수 기준 검토에만 사용하며, 외부에 공개하거나 제3자에게 제공하지 않습니다. 분석은 참가 코드로만 이루어집니다.</p>' +
+  '<h3>4. 보관과 삭제</h3><p>파일럿 자료는 응시일부터 ' + CONFIG.RETENTION_MONTHS + '개월간 보관한 뒤 삭제합니다.</p>' +
+  '<h3>5. 저장 위치</h3><p>자료는 Google 스프레드시트에 저장되며, Google의 서버(국외 포함)에서 처리될 수 있습니다.</p>' +
+  '<h3>6. 동의하지 않을 권리와 삭제 요청</h3><p>동의하지 않아도 불이익이 없으며, 동의하지 않으면 파일럿에 참여하지 않습니다. 참여한 뒤에도 참가 코드를 알려 주시면 자료를 삭제해 드립니다. 문의: ' + esc(CONFIG.CONTACT) + '</p>' +
+  '<h3>7. 만 14세 미만</h3><p>만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다.</p></div>';
+}
+function renderIntro() {
+  var codeOk = /^P\d{3,4}$/i.test(S.code || '');
+  var h = '<h1>COAVIA English Foundation Diagnostic</h1><p class="sub">파일럿 시험 (새 영어 진단 시험의 문항을 점검하기 위한 시범 운영)</p>';
+  if (!gasReady()) h += '<div class="banner">테스트 모드입니다. 서버 주소가 설정되지 않아 응답이 이 기기에만 저장됩니다. (배포 전에 CONFIG.GAS_URL을 설정하세요)</div>';
+  if (CONFIG.CONTACT.indexOf('[') === 0) h += '<div class="banner">배포 전에 CONFIG.CONTACT(문의 연락처)를 입력하세요.</div>';
+  h += '<div class="card"><h2 style="margin-top:0">시험 안내</h2><ul style="margin:0 0 6px;padding-left:20px"><li>34문항, 약 ' + CONFIG.EST_MINUTES + '분 (시간 제한은 없고 풀이 시간이 기록됩니다)</li><li>어휘, 문법, 읽기, 듣기, 문장 만들기 순서로 진행합니다.</li><li>듣기 문항은 소리가 나옵니다. 이어폰이나 헤드폰과 조용한 환경을 권장합니다.</li><li>한 번 넘어간 문제로는 돌아갈 수 없습니다.</li><li>성적이나 평가에 쓰이지 않으며, 결과는 학생에게 바로 보여 주지 않고 선생님이 확인합니다.</li></ul></div>';
+  h += '<div class="card" style="margin-top:14px"><h2 style="margin-top:0">개인정보 수집·이용 동의</h2>' + consentHtml() + '</div>';
+  h += '<div class="card" style="margin-top:14px"><label class="field">참가 코드 (선생님이 알려 준 코드, 예: P001)<input type="text" id="f-code" value="' + esc(S.code) + '" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>';
+  h += '<label class="field">학년<select id="f-grade"><option value="">선택하세요</option>' + GRADES.map(function (g) { return '<option' + (S.grade === g ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select></label>';
+  h += '<div class="field radios">목표 시험' + GOALS.map(function (g) { return '<label><input type="radio" name="goal" value="' + esc(g) + '"' + (S.goal === g ? ' checked' : '') + '> ' + esc(g) + '</label>'; }).join('') + '</div>';
+  h += '<div class="field radios">동의 확인<label><input type="radio" name="guard" value="14+"' + (S.guardian === '14+' ? ' checked' : '') + '> 만 14세 이상이며, 위 안내를 읽고 이해했으며 파일럿 참여와 정보 수집에 동의합니다.</label><label><input type="radio" name="guard" value="under14"' + (S.guardian === 'under14' ? ' checked' : '') + '> 만 14세 미만이며, 보호자의 동의를 받았습니다.</label></div>';
+  if (formErr) h += '<p class="err" role="alert">' + esc(formErr) + '</p>';
+  return h + '<button class="btn primary" data-act="begin">동의하고 시작하기</button></div>';
+}
+function renderResume() { return '<h1>이어서 하시겠습니까?</h1><div class="card"><p>이 기기에 진행 중이던 시험이 있습니다. (참가 코드 ' + esc(S.code) + ')</p><p class="sub">선생님과 함께 확인한 뒤 선택하세요.</p><div class="nav"><button class="btn primary" data-act="resume">이어서 하기</button><button class="btn" data-act="restart">처음부터 다시 (기록 삭제)</button></div></div>'; }
+function renderSound() {
+  var h = '<h1>소리 확인</h1><div class="card"><p>듣기 문항이 있어서 시험 전에 소리를 확인합니다. 이어폰이나 헤드폰을 쓰고 음량을 적당히 맞춰 주세요.</p><div id="pl-SOUND">' + playerInner('SOUND', '', 0) + '</div>';
+  h += '<div class="nav"><button class="btn primary" data-act="sok">소리가 들려요</button><button class="btn" data-act="sfail">소리가 들리지 않아요</button></div>';
+  if (S.sound === 'failed') h += '<p class="err">소리가 나지 않으면 음량과 기기의 소리 설정을 확인하고, 그래도 안 되면 선생님께 알려 주세요. 선생님께 알린 뒤에는 그대로 시험을 진행할 수 있습니다.</p><button class="btn" data-act="scontinue">그래도 시험 시작하기</button>';
+  return h + '</div>';
+}
+function renderSection(sec) { var s = SEC[sec]; return '<h1>' + esc(s.title) + ' (' + s.range + ')</h1><div class="card"><p>' + esc(s.text) + '</p><p class="sub">시간 제한은 없지만 풀이 시간이 기록됩니다. 앞 문제로 돌아갈 수 없습니다.</p><div class="nav"><button class="btn primary" data-act="secgo">시작</button></div></div>'; }
+function renderUnit(u) {
+  var h = progressHtml();
+  var left = '';
+  if (u.kind === 'passage') left = passageHtml(u);
+  else if (u.kind === 'clip') left = playerHtml(u.id, u.tts, u.plays, '듣기 (재생 ' + u.plays + '회)');
+  else if (u.kind === 'dict') left = playerHtml(u.id, u.tts, u.plays, '받아쓰기 (재생 ' + u.plays + '회)');
+  h += '<div class="grid' + (left ? '' : ' single') + '">' + left + '<div>' + u.items.map(itemHtml).join('') + '<div class="nav"><button class="btn primary" data-act="next">' + (S.pos >= FLOW.length - 1 ? '마치기' : '다음') + '</button></div></div></div>';
+  return h;
+}
+function renderUnclear() {
+  var h = '<h1>마지막 질문</h1><div class="card"><p>이해하기 어려웠던 <b>질문(문제에 적힌 영어 지시문)</b>이 있으면 번호를 골라 주세요. 없으면 그대로 제출하세요. 이 답은 점수에 영향을 주지 않습니다.</p><div class="unclear-list">';
+  Object.keys(ITEMS).map(Number).sort(function (a, b) { return a - b; }).forEach(function (no) { var it = ITEMS[no]; h += '<label><input type="checkbox" data-act="unc" data-no="' + no + '"' + (S.unclear.indexOf(no) >= 0 ? ' checked' : '') + '> ' + no + '. ' + esc(it.stem_en) + '</label>'; });
+  return h + '</div><div class="nav"><button class="btn primary" data-act="finish"' + (finishing ? ' disabled' : '') + '>제출하기</button></div></div>';
+}
+function renderDone() {
+  var h = '<h1>수고했습니다!</h1><div class="card"><p>시험이 끝났습니다. 결과는 선생님이 확인한 뒤 알려 줍니다.</p>';
+  if (TEACHER) { h += '<p class="sub">[교사 확인용] 전송 상태: ' + esc(sendStatus || '없음') + '</p><div class="nav"><button class="btn" data-act="backup">응답 백업 파일 내려받기</button></div>'; }
+  else if (sendStatus && sendStatus.indexOf('완료') !== 0) h += '<p class="sub">전송이 완료되지 않았을 수 있습니다. 선생님께 알려 주세요.</p>';
+  return h + '</div>';
+}
+function render() {
+  var app = document.getElementById('app'), h = '';
+  if (resumeOffer) h = renderResume();
+  else if (S.stage === 'intro') h = renderIntro();
+  else if (S.stage === 'sound') h = renderSound();
+  else if (S.stage === 'flow') { var f = curFlow(); h = f.t === 'sec' ? renderSection(f.sec) : renderUnit(f.u); }
+  else if (S.stage === 'unclear') h = renderUnclear();
+  else h = renderDone();
+  app.innerHTML = h;
+}
+
+/* ===================== 응답 기록 ===================== */
+function touch(no) {
+  var e = Date.now() - uStart, t = S.T[no] || (S.T[no] = { first: e, last: e, n: 0 });
+  t.last = e; t.n++; save();
+}
+function isAnswered(it) {
+  var r = S.R[it.no];
+  if (it.type === 'rs') return !!r && Object.keys(r).some(function (k) { return r[k]; });
+  if (it.type === 'order') return !!r && r.length === it.tiles.length;
+  if (it.type === 'err') return !!r && !!r.lock && !!r.s2;
+  if (it.type === 'dict') return !!r && String(r).trim().length > 0;
+  return !!r;
+}
+function serialize(it) {
+  var r = S.R[it.no];
+  if (it.type === 'rs') return it.words.filter(function (w) { return r && r[w]; });
+  if (it.type === 'order') return (r || []).map(function (i) { return it.tiles[i]; });
+  if (it.type === 'err') return r ? { s1: r.s1 || null, s2: r.s2 || null } : { s1: null, s2: null };
+  return r === undefined ? null : r;
+}
+function responsesFor(nos) {
+  return nos.map(function (no) { var t = S.T[no] || {}, it = ITEMS[no]; return { no: no, resp: serialize(it), t_first_ms: t.first, t_last_ms: t.last, changes: t.n || 0, unit_time_ms: S.U[no] }; });
+}
+function audioStatus() {
+  var out = {}; UNITS.forEach(function (u) {
+    if (u.kind === 'clip' || u.kind === 'dict') {
+      var st = S.clip[u.id] || { played: 0, fails: 0, status: 'idle' };
+      if (S.failed[u.id] || st.status === 'error' || st.status === 'interrupted') out[u.id] = 'failed';
+      else if (st.status === 'done') out[u.id] = 'ok';
+      else if (!synthOk()) out[u.id] = 'unsupported';
+      else if (st.played > 0) out[u.id] = 'failed';
+      else out[u.id] = 'skipped';
+    }
+  });
+  return out;
+}
+function unitDone(u) {
+  var elapsed = Date.now() - uStart; u.items.forEach(function (it) { S.U[it.no] = elapsed; });
+  try { speechSynthesis.cancel(); } catch (e) {}
+  save();
+}
+
+/* ===================== 이벤트 ===================== */
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-act]'); if (!b || b.tagName === 'INPUT' && b.type === 'radio') return;
+  var a = b.getAttribute('data-act'), no = +b.getAttribute('data-no'), it = ITEMS[no];
+  if (a === 'begin') { begin(); return; }
+  if (a === 'resume') { resumeOffer = false; uStart = Date.now(); render(); return; }
+  if (a === 'restart') { lsDel(STORE); S = fresh(); resumeOffer = false; render(); return; }
+  if (a === 'play') { var id = b.getAttribute('data-id'); var u = curUnit(); if (id === 'SOUND') playClip('SOUND', 'Hello. This is a sound check. If you can hear this voice, press the button that says you can hear it.', 0); else if (u) playClip(id, u.tts, u.plays); return; }
+  if (a === 'failaudio') { var fid = b.getAttribute('data-id'); S.failed[fid] = true; alog(fid, 'marked_failed'); save(); refreshPlayer(fid); return; }
+  if (a === 'sok') { S.sound = 'ok'; alog('SOUND', 'sound_ok'); enterFlow(); return; }
+  if (a === 'sfail') { S.sound = 'failed'; alog('SOUND', 'sound_failed'); save(); render(); return; }
+  if (a === 'scontinue') { alog('SOUND', 'continue_after_failed'); enterFlow(); return; }
+  if (a === 'secgo') { S.pos++; uStart = Date.now(); save(); render(); window.scrollTo(0, 0); return; }
+  if (a === 'rs') { var w = b.getAttribute('data-w'); S.R[no] = S.R[no] || {}; S.R[no][w] = !S.R[no][w]; touch(no); render(); return; }
+  if (a === 'oadd') { S.R[no] = (S.R[no] || []).concat([+b.getAttribute('data-i')]); touch(no); render(); return; }
+  if (a === 'orm') { var ps = +b.getAttribute('data-pos'); S.R[no] = (S.R[no] || []).filter(function (_, i) { return i !== ps; }); touch(no); render(); return; }
+  if (a === 'oclr') { S.R[no] = []; touch(no); render(); return; }
+  if (a === 'e1') { S.R[no] = S.R[no] || {}; if (!S.R[no].lock) { S.R[no].s1 = b.getAttribute('data-l'); touch(no); render(); } return; }
+  if (a === 'elock') { if (S.R[no] && S.R[no].s1) { S.R[no].lock = true; touch(no); render(); } return; }
+  if (a === 'next') { next(); return; }
+  if (a === 'unc') return;
+  if (a === 'finish') { finish(); return; }
+  if (a === 'backup') { downloadBackup(); return; }
+});
+document.addEventListener('change', function (e) {
+  var t = e.target, a = t.getAttribute && t.getAttribute('data-act');
+  if (a === 'pick') { S.R[+t.getAttribute('data-no')] = t.value; touch(+t.getAttribute('data-no')); }
+  else if (a === 'e2') { var n = +t.getAttribute('data-no'); S.R[n].s2 = t.value; touch(n); }
+  else if (a === 'unc') { var k = +t.getAttribute('data-no'), i = S.unclear.indexOf(k); if (t.checked && i < 0) S.unclear.push(k); if (!t.checked && i >= 0) S.unclear.splice(i, 1); save(); }
+});
+document.addEventListener('input', function (e) {
+  var t = e.target, a = t.getAttribute && t.getAttribute('data-act');
+  if (a === 'dict') { var n = +t.getAttribute('data-no'); S.R[n] = t.value; touch(n); }
+});
+window.addEventListener('beforeunload', function (e) { if (S.stage === 'flow' || S.stage === 'unclear') { e.preventDefault(); e.returnValue = ''; } });
+
+/* ===================== 진행 ===================== */
+function begin() {
+  S.code = (document.getElementById('f-code').value || '').trim().toUpperCase();
+  S.grade = document.getElementById('f-grade').value;
+  var g = document.querySelector('input[name=goal]:checked'), d = document.querySelector('input[name=guard]:checked');
+  S.goal = g ? g.value : ''; S.guardian = d ? d.value : '';
+  formErr = '';
+  if (!/^P\d{3,4}$/.test(S.code)) formErr = '참가 코드를 형식에 맞게 입력하세요. (예: P001)';
+  else if (!S.grade) formErr = '학년을 선택하세요.';
+  else if (!S.goal) formErr = '목표 시험을 선택하세요.';
+  else if (!S.guardian) formErr = '동의 확인 항목을 선택하세요.';
+  else if (UNDER14.indexOf(S.grade) >= 0 && S.guardian !== 'under14') formErr = '선택한 학년은 만 14세 미만일 수 있습니다. 나이를 확인하고, 만 14세 미만이면 보호자 동의를 받은 뒤 두 번째 항목을 선택하세요.';
+  if (formErr) { save(); render(); return; }
+  S.stage = 'sound'; S.startedAt = new Date().toISOString(); save();
+  post(Object.assign({ action: 'start', page_version: CONFIG.PAGE_VERSION, consent_version: CONFIG.CONSENT_VERSION, guardian_ack: S.guardian, grade: S.grade, goal: S.goal, sound_check: '' }, envInfo()));
+  render();
+}
+function enterFlow() { S.stage = 'flow'; S.pos = 0; uStart = Date.now(); save(); render(); window.scrollTo(0, 0); }
+function next() {
+  var u = curUnit(); if (!u) return;
+  var unanswered = u.items.filter(function (it) { return !isAnswered(it); }).length;
+  if ((u.kind === 'clip' || u.kind === 'dict')) {
+    var st = S.clip[u.id] || { played: 0, status: 'idle' };
+    if (st.status === 'playing' || st.status === 'loading') { alert('음성 재생이 끝난 뒤 다음으로 넘어가 주세요.'); return; }
+    if (st.played === 0 && !S.failed[u.id]) { if (!confirm('재생 버튼을 누르지 않았습니다. 듣지 않고 다음으로 넘어갈까요?')) return; alog(u.id, 'skipped_no_play'); }
+  }
+  if (unanswered && !confirm(unanswered + '개 문제에 답하지 않았습니다. 그대로 다음으로 넘어갈까요? (돌아올 수 없습니다)')) return;
+  unitDone(u);
+  var nextF = FLOW[S.pos + 1], sectionEnd = !nextF || nextF.t === 'sec';
+  if (sectionEnd) {
+    var nos = []; UNITS.forEach(function (x) { if (x.sec === u.sec) x.items.forEach(function (it) { nos.push(it.no); }); });
+    post({ action: 'checkpoint', section: u.sec, data: { responses: responsesFor(nos), audio: S.audio.slice(-60) } });
+  }
+  if (!nextF) { S.stage = 'unclear'; save(); render(); window.scrollTo(0, 0); return; }
+  S.pos++; uStart = Date.now(); save(); render(); window.scrollTo(0, 0);
+}
+function buildFinal() {
+  var nos = Object.keys(ITEMS).map(Number).sort(function (a, b) { return a - b; });
+  var totalMs = S.startedAt ? Date.now() - new Date(S.startedAt).getTime() : null;
+  return Object.assign({ action: 'finish', page_version: CONFIG.PAGE_VERSION, consent_version: CONFIG.CONSENT_VERSION, guardian_ack: S.guardian, grade: S.grade, goal: S.goal, sound_check: S.sound, responses: responsesFor(nos), audio: S.audio, audio_status: audioStatus(), unclear: S.unclear.slice().sort(function (a, b) { return a - b; }), total_time_ms: totalMs }, envInfo());
+}
+async function finish() {
+  if (finishing) return; finishing = true; render();
+  var payload = buildFinal(); S.finalPayload = payload; save();
+  var r = await post(payload);
+  sendStatus = r.ok ? '완료 (서버 확인)' : r.mode === 'test' ? '테스트 모드 (서버 미설정, 이 기기에 저장됨)' : r.opaque ? '서버 응답을 확인하지 못했습니다 (재전송 대기 중)' : '실패';
+  S.stage = 'done'; S.sent.finish = r.ok; save(); finishing = false; lsDel(STORE); render(); window.scrollTo(0, 0);
+}
+function downloadBackup() {
+  var data = JSON.stringify(S.finalPayload || buildFinal(), null, 2), blob = new Blob([data], { type: 'application/json' }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'pilot_backup_' + S.code + '.json'; document.body.appendChild(a); a.click(); a.remove();
+}
+
+try { if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = function () {}; } catch (e) {}
+flushPending();
+render();
+</script>
+</body>
+</html>
