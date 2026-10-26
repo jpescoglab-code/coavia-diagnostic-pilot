@@ -145,7 +145,7 @@ h2 {color:var(--coavia-deep);font-size:19px;line-height:1.5;}
 @media(max-width:390px){.coavia-site-head{flex-direction:column;align-items:stretch}.coavia-logo{align-self:center}.coavia-head-actions{justify-content:center}}
 
 
-/* Public COAVIA Foundation Diagnostic v1.0 */
+/* Public COAVIA Foundation Diagnostic v1.1 · result sharing */
 .public-kicker{font-size:11px;font-weight:800;letter-spacing:.17em;color:#a77732;margin-bottom:13px}
 .public-lead{color:#596b83;font-size:15px;margin:12px 0 22px;max-width:72ch;line-height:1.8}
 .public-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:24px 0 20px}
@@ -171,6 +171,33 @@ h2 {color:var(--coavia-deep);font-size:19px;line-height:1.5;}
 .review-note{font-size:12px;color:#667991}.all-reviews:not(.visible){display:none}
 @media(max-width:620px){.public-stats{grid-template-columns:1fr}.public-stats>div{flex-direction:row;justify-content:space-between;gap:10px}.result-score{font-size:45px}.review-item summary{flex-wrap:wrap}.review-title{min-width:calc(100% - 65px)}.review-status{margin-left:50px}}
 
+
+/* Public results: share, save and compact answer review */
+.report-actions{margin-top:18px;padding:20px;border-radius:12px;border:1px solid #dfe7ed;background:linear-gradient(135deg,#f7f9fc,#fff);}
+.report-actions h2{font-size:17px;line-height:1.35;color:#172e50;margin:0 0 7px;font-family:Arial,'Noto Sans KR','Apple SD Gothic Neo',sans-serif;font-weight:800;}
+.report-actions p{font-size:12.5px;color:#566982;margin:0 0 12px;line-height:1.7;}
+.report-name{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;font-size:13px;color:#243c60;font-weight:700;}
+.report-name input{font:inherit;font-weight:400;border:1px solid #ccd6e2;border-radius:8px;background:#fff;padding:9px 11px;width:min(100%,260px);max-width:100%;color:#1a2b46;}
+.report-buttons{display:flex;flex-wrap:wrap;gap:8px;}
+.report-buttons .btn{font-weight:700;min-height:41px;font-size:13.5px;}
+.report-status{font-size:12.5px;margin-top:11px;min-height:1.2em;color:#255a45;font-weight:700;}
+.review-expander{margin-top:15px;}
+.print-student-name{display:none;}
+@media(max-width:540px){.report-actions{padding:14px 12px;}.report-buttons .btn{flex:1 1 auto;}.report-name{display:block;}.report-name input{display:block;margin-top:7px;width:100%;}}
+@media print{
+ body{background:#fff!important;color:#000!important;}
+ .wrap{box-shadow:none!important;border:0!important;margin:0!important;max-width:none!important;}
+ #app{padding:0!important;}
+ .coavia-site-head,.coavia-site-foot,.report-actions,.review-expander,.result-nav,.result-description{display:none!important;}
+ #all-reviews{display:block!important;margin-top:20px!important;}
+ .review-item{break-inside:avoid;page-break-inside:avoid;}
+ .review-item summary{font-size:11px;}
+ .review-body{font-size:11px;}
+ .review-passage{max-height:none!important;overflow:visible!important;}
+ .result-card{border-color:#ccc!important;}
+ .print-student-name{display:block!important;font-weight:700;margin:10px 0;color:#172e50!important;}
+}
+
 </style>
 </head>
 <body>
@@ -182,7 +209,7 @@ h2 {color:var(--coavia-deep);font-size:19px;line-height:1.5;}
 <script>
 'use strict';
 /* 누구나 참여하는 공개 진단검사: 서버 전송 없음 */
-var CONFIG = { PAGE_VERSION: 'public-v1.0', EST_MINUTES: '40' };
+var CONFIG = { PAGE_VERSION: 'public-v1.1', EST_MINUTES: '40' };
 
 /* ===================== 문항 데이터 (정답 없음) ===================== */
 var UNITS = [{"sec":"VOC","kind":"item","items":[{"no":1,"type":"mc","stem_en":"Choose the best word for the blank.","options":["cook","wash","write","drink"],"sentence":"My hands are dirty, so I need to ____ them."}]},{"sec":"VOC","kind":"item","items":[{"no":2,"type":"rs","stem_en":"Select the real English words.","words":["nustal","invite","plorin","vemish","usual","cavlen","almost","tremic"]}]},{"sec":"VOC","kind":"item","items":[{"no":3,"type":"mc","stem_en":"Choose the best word for the blank.","options":["common","similar","available","effective"],"sentence":"The new medicine is ____ because it stopped my headache quickly."}]},{"sec":"VOC","kind":"item","items":[{"no":4,"type":"mc","stem_en":"Choose the best word for the blank.","options":["contribute","provide","supply","offer"],"sentence":"Regular exercise can ____ to better sleep at night."}]},{"sec":"VOC","kind":"item","items":[{"no":5,"type":"rs","stem_en":"Select the real English words.","words":["brastive","presence","approval","pelmory","requirement","appropriate","clariment","principle"]}]},{"sec":"VOC","kind":"item","items":[{"no":6,"type":"mc","stem_en":"Choose the best word for the blank.","options":["repeated","supported","qualified","rejected"],"sentence":"The final sentence ____ the earlier statement by adding two limits."}]},{"sec":"GRA","kind":"item","items":[{"no":7,"type":"mc","stem_en":"Choose the correct answer.","options":["eat","eating","are eating","eats"],"sentence":"My brother ____ breakfast at home every morning."}]},{"sec":"GRA","kind":"item","items":[{"no":8,"type":"mc","stem_en":"Choose the correct answer.","options":["have seen","saw","see","am seeing"],"sentence":"I ____ that movie last Saturday, so I know the ending."}]},{"sec":"GRA","kind":"item","items":[{"no":9,"type":"mc","stem_en":"Choose the correct answer.","options":["will stay","stayed","have stayed","would stay"],"sentence":"If it rains tomorrow, we ____ at home."}]},{"sec":"GRA","kind":"item","items":[{"no":10,"type":"mc","stem_en":"Choose the correct answer.","options":["was seeing","have seen","had seen","would see"],"sentence":"Anna asked whether I ____ the message she had sent the day before."}]},{"sec":"GRA","kind":"item","items":[{"no":11,"type":"mc","stem_en":"Choose the correct answer.","options":["making","to make","to making","make"],"sentence":"The new system is expected ____ the process easier for everyone."}]},{"sec":"GRA","kind":"item","items":[{"no":12,"type":"mc","stem_en":"Choose the correct answer.","options":["are","have","has","is"],"sentence":"The quality of the materials in these shoes ____ excellent."}]},{"sec":"REA","kind":"passage","id":"R-P1","text":"Library Notice\n\nThe school library will close early this Friday. There is a teachers' meeting. You can use the library from 8:30 a.m. to 3:00 p.m. Please bring back your books before 3:00 p.m. The study room will close at 3:00 p.m., too. The library will open again on Monday at 8:30 a.m. You can still use the library website.","items":[{"no":13,"type":"mc","stem_en":"What is this notice about?","options":["A library event","A change in library hours","How to use the library website","A teachers' meeting"]},{"no":14,"type":"mc","stem_en":"When will the library open again?","options":["Friday at 3:00 p.m.","Friday at 8:30 a.m.","Monday at 8:30 a.m.","Monday at 3:00 p.m."]}]},{"sec":"REA","kind":"passage","id":"R-P2","text":"Dear volunteers,\n\nThank you for signing up for our park clean-up this Saturday. The weather report says heavy rain is likely in the morning, so we have changed the starting time from 9:00 a.m. to 1:00 p.m. We will still meet at the main gate of Green Park. Please bring a water bottle and wear old clothes and comfortable shoes. Gloves and trash bags will be provided. If the rain continues into the afternoon, the event will not happen, and we will send everyone a message by 11:00 a.m. We hope the new time will allow more people to join us.","items":[{"no":15,"type":"mc","stem_en":"What is the main purpose of this email?","options":["To tell volunteers about a change to the event","To ask volunteers to bring more cleaning supplies","To invite volunteers to a different park event","To explain why Green Park needs more volunteers"]},{"no":16,"type":"mc","stem_en":"Which statement is NOT true according to the email?","options":["The event will now start at 1:00 p.m.","Volunteers will meet at Green Park's main gate.","Volunteers should bring water and wear comfortable shoes.","Everyone will get a message after 1:00 p.m."]}]},{"sec":"REA","kind":"passage","id":"R-P3","text":"School Roof Garden Finds More Uses\n\nLast spring, Westfield Secondary School turned part of an empty roof into a small garden. The project began because science teachers wanted students to study plants outside the classroom. So the school built six large plant boxes and a simple watering system. At first, only two classes used the garden, but interest grew after students shared photos and short reports on the school website. By autumn, students from the cooking club were growing plants for cooking there, and an art class was using the space to draw plants. The garden also became a meeting place at lunch, although students still need a teacher to be present. This year, the school plans to add more plant boxes because several groups have asked to use the space. However, the school will not open the roof to everyone at all times; teachers say the area is small and safety rules must still be followed. The school is now considering whether similar projects could work in other empty areas.","items":[{"no":17,"type":"mc","stem_en":"Why does the school plan to add more plant boxes this year?","options":["Several groups have asked to use the garden.","Teachers want fewer students to use the roof.","The cooking club needs more space than the art class.","Students have complained about the garden on the website."]},{"no":18,"type":"mc","stem_en":"What can most reasonably be inferred about the roof garden?","options":["The garden can support every subject taught at the school.","The school plans to remove most rules for using the roof.","The garden is popular, but access to it is still limited.","The school has already created similar gardens in other areas."]}]},{"sec":"REA","kind":"passage","id":"R-P4","text":"When More Choice Becomes Less Helpful\n\nPeople often think that having more choices makes a decision easier because it gives them a better chance of finding exactly what they want. That is sometimes true, especially when the options are clearly different and the decision is simple. However, a long list of similar choices can create a different problem: people may spend more time comparing small differences than deciding what actually matters to them.\n\nImagine a student choosing an online course from a list of thirty classes that all cover nearly the same topic. The student may begin by comparing useful points such as price, schedule, and course level. After a while, though, attention may move to small details, such as the color of a website or the exact length of each video. The extra choices have not necessarily improved the decision; instead, they have added more information that the student must sort through. This example shows why more options can sometimes make a simple choice feel harder.\n\nStill, the answer is not to remove choice completely. A smaller set of well-organized options can help people compare important differences without feeling that they must examine everything. For that reason, the most useful system may be one that offers enough variety for different needs while also helping people focus on the few differences that matter most.","items":[{"no":19,"type":"mc","stem_en":"What is the main function of the second paragraph?","options":["To show that having many choices usually leads to better decisions","To show how extra options can make a simple decision harder","To explain which details students should compare before choosing a course","To describe why online courses often have similar prices and schedules"]},{"no":20,"type":"mc","stem_en":"Which conclusion is best supported by both the first and third paragraphs?","options":["A smaller set is useful because people can compare more minor details.","Similar choices become easier when people spend more time comparing them.","Organizing choices mainly helps people who already know what they want.","A larger set may still work when choices are organized around key differences."]}]},{"sec":"LIS","kind":"clip","id":"L-C1","tts":"Hello, art club students. Today's meeting is in a new place. It is not in Room twelve. Another class is using that room. Please come to the school library at four fifteen. Bring a pen. The meeting ends at five o'clock. Your parents can wait outside the library.","plays":1,"items":[{"no":21,"type":"mc","stem_en":"What is this message about?","options":["A new school library","A meeting for parents","An art class in Room 12","A change to an art club meeting"]},{"no":22,"type":"mc","stem_en":"What time should students come to the library?","options":["4:00 p.m.","4:15 p.m.","5:00 p.m.","5:15 p.m."]}]},{"sec":"LIS","kind":"clip","id":"L-C2","tts":"Good afternoon, everyone. This is an update about Saturday's school book fair. The fair will still take place in the main hall. Doors open at one thirty in the afternoon, so visitors can look around before the first talk. The guest speaker's talk was planned for two o'clock, but now it starts at two thirty. The speaker needs extra travel time because her train is late. The used-book sale begins at three o'clock as planned. Please bring cash because some tables cannot accept cards. Students helping at the fair should meet at the front desk. Please check the school website tonight for any further updates.","plays":1,"items":[{"no":23,"type":"mc","stem_en":"What is the main purpose of this announcement?","options":["To announce a change to the book fair","To invite students to sell books","To explain how to pay by card","To describe the guest speaker's books"]},{"no":24,"type":"mc","stem_en":"What time will the guest speaker's talk start?","options":["1:30 p.m.","2:00 p.m.","2:30 p.m.","3:00 p.m."]}]},{"sec":"LIS","kind":"dict","id":"D-1","tts":"The concert has moved indoors because heavy rain continues.","plays":2,"items":[{"no":25,"type":"dict","stem_en":"Listen and type the sentence you hear."}]},{"sec":"LIS","kind":"clip","id":"L-C3","tts":"People often make long task lists because writing everything down feels organized. I’d suggest a different approach: choose three tasks that matter most, and leave the rest for later. For example, imagine a student preparing for a busy evening. She needs to finish a report, answer several messages, buy groceries, and clean her room. She chooses the report, the groceries, and one important message as her priorities. Surprisingly, the shorter list helps her start sooner because she does not keep deciding what to do next. After those tasks are done, she checks the longer list again. However, a short list is not perfect for every day. An unexpected problem may appear, or one task may take much longer than expected. That said, I would not treat the rule of three tasks as strict. It is better used as a flexible guide that helps you focus while still allowing plans to change.","plays":1,"items":[{"no":26,"type":"mc","stem_en":"What does the student do after finishing her three main tasks?","options":["Goes back to her longer list","Cleans her room next","Buys the groceries first","Answers several messages"]},{"no":27,"type":"mc","stem_en":"What is the speaker's view of this method?","options":["It should be followed every single day","It only works if nothing goes wrong","It is helpful, but not always suitable","It is mainly useful for students"]}]},{"sec":"LIS","kind":"dict","id":"D-2","tts":"The sample, which was tested carefully, remained stable after transport.","plays":2,"items":[{"no":28,"type":"dict","stem_en":"Listen and type the sentence you hear."}]},{"sec":"SB","kind":"item","items":[{"no":29,"type":"order","stem_en":"Put the words in the correct order.","tiles":["blue","She","jacket.","wearing","a","is"]}]},{"sec":"SB","kind":"item","items":[{"no":30,"type":"order","stem_en":"Put the words in the correct order.","tiles":["take?","the","does","ride","How","train","long"]}]},{"sec":"SB","kind":"item","items":[{"no":31,"type":"order","stem_en":"Put the words in the correct order.","tiles":["the","without","Although","difficulty.","wet,","road","bus","arrived","was","the"]}]},{"sec":"SB","kind":"item","items":[{"no":32,"type":"order","stem_en":"Put the words in the correct order.","tiles":["agree","Only","the","sign","after","she","to","did","checking","details","form.","the"]}]},{"sec":"SB","kind":"item","items":[{"no":33,"type":"err","stem_en":"Find the mistake.","fix_stem_en":"Choose the correct fix.","segments":[{"label":"A","text":"For 2023,"},{"label":"B","text":"my sister has worked"},{"label":"C","text":"at the same hotel"},{"label":"D","text":"and still enjoys it."}],"fix_options":[{"label":"A","text":"During 2023,"},{"label":"B","text":"Until 2023,"},{"label":"C","text":"Before 2023,"},{"label":"D","text":"Since 2023,"}]}]},{"sec":"SB","kind":"item","items":[{"no":34,"type":"err","stem_en":"Find the mistake.","fix_stem_en":"Choose the correct fix.","segments":[{"label":"A","text":"The class teaches students"},{"label":"B","text":"how to set goals,"},{"label":"C","text":"solve problems, and communicating clearly"},{"label":"D","text":"during group work."}],"fix_options":[{"label":"A","text":"solving problems, and communicate clearly"},{"label":"B","text":"solve problems, and communicate clearly"},{"label":"C","text":"solve problems, and communicated clearly"},{"label":"D","text":"solve problems, and communicating clearly"}]}]}];
@@ -411,8 +438,73 @@ function renderDone(){
   var got=0;num.forEach(function(n){var p=pointsFor(n),s=bySec[UNITS.find(function(x){return x.items.some(function(i){return i.no===n;});}).sec];got+=p;s.got+=p;s.total++;});
   var score=Number(got.toFixed(2));
   var rows=Object.keys(bySec).map(function(id){var s=bySec[id];return '<span>'+s.label+'</span><strong>'+s.got+' / '+s.total+'</strong>';}).join('');
-  return `<div class="public-kicker">COAVIA DIAGNOSTIC RESULT</div><h1>진단을 마쳤습니다.</h1><div class="card result-card"><p class="result-label">나의 진단 점수</p><div class="result-score">${score}<span> / 34</span></div><p class="result-desc">총 34문항의 영역별 점수를 확인하세요. 이 점수는 COAVIA 자체 진단 점수이며 공식 시험 점수 또는 CEFR 등급이 아닙니다.</p><div class="section-scores">${rows}</div><div class="nav"><button class="btn primary" data-act="showreview">전체 34문항 정답 보기 ↓</button><button class="btn" data-act="restart">다시 응시하기</button></div></div><section id="all-reviews" class="all-reviews visible"><h2>전체 정답 및 내 답 비교</h2><p class="sub">각 문항을 누르면 정답과 내가 선택한 답을 확인할 수 있습니다. 듣기 문제의 원문도 확인할 수 있습니다.</p>${num.map(renderReviewItem).join('')}</section>`;
+  return `<div class="public-kicker">COAVIA DIAGNOSTIC RESULT</div><h1>진단을 마쳤습니다.</h1><div class="card result-card"><p class="result-label">나의 진단 점수</p><div class="result-score">${score}<span> / 34</span></div><p class="result-desc">총 34문항의 영역별 점수를 확인하세요. 이 점수는 COAVIA 자체 진단 점수이며 공식 시험 점수 또는 CEFR 등급이 아닙니다.</p><div class="section-scores">${rows}</div><div class="report-actions"><h2>결과 보내기 · 저장하기</h2><p>선생님에게 점수를 보내거나 34문항의 상세 결과를 보관할 수 있습니다.</p><label class="report-name" for="reportStudentName">이름 (선택) <input type="text" id="reportStudentName" autocomplete="name" maxlength="60" placeholder="결과에 표시할 이름"></label><div class="report-buttons"><button type="button" class="btn primary" data-act="emailreport">이메일로 보내기</button><button type="button" class="btn" data-act="copyreport">전체 결과 복사</button><button type="button" class="btn" data-act="printreport">PDF 저장 / 인쇄</button></div><p id="report-status" class="report-status" aria-live="polite"></p><p class="result-description">이메일 버튼은 메일 작성창을 열며 자동 발송하지 않습니다. 상세 답안 전체를 보내려면 ‘전체 결과 복사’ 후 메일 본문에 붙여넣거나 PDF를 첨부하세요.</p></div><div class="nav result-nav"><button type="button" class="btn" data-act="restart">다시 응시하기</button></div></div><div class="review-expander"><button type="button" class="btn primary" data-act="showreview" aria-expanded="false" aria-controls="all-reviews">34문항 정답 · 내 답 확인하기 ↓</button></div><section id="all-reviews" class="all-reviews"><h2>전체 정답 및 내 답 비교</h2><p class="sub">각 문항을 누르면 정답과 내가 선택한 답을 확인할 수 있습니다. 듣기 문제의 원문도 확인할 수 있습니다.</p>${num.map(renderReviewItem).join('')}</section>`;
 }
+
+/* 결과 공유: 외부 서버 전송 없이 학생의 명시적 동작으로만 공유합니다. */
+function reportName(){
+  var el=document.getElementById('reportStudentName');
+  return el ? String(el.value || '').trim().slice(0,60) : '';
+}
+function resultData(){
+  var ids=Object.keys(ITEMS).map(Number).sort(function(a,b){return a-b;});
+  var sections={VOC:{label:'어휘',got:0,total:0},GRA:{label:'문법',got:0,total:0},REA:{label:'읽기',got:0,total:0},LIS:{label:'듣기',got:0,total:0},SB:{label:'문장 만들기',got:0,total:0}};
+  var map={};UNITS.forEach(function(u){u.items.forEach(function(it){map[it.no]=u.sec;});});
+  var sum=0;ids.forEach(function(no){var p=pointsFor(no);sum+=p;sections[map[no]].got+=p;sections[map[no]].total++;});
+  return {ids:ids,score:Number(sum.toFixed(2)),sections:sections,map:map};
+}
+function resultSummaryText(){
+  var d=resultData(),name=reportName();
+  var lines=['COAVIA English Foundation Diagnostic · 진단 결과'];
+  if(name)lines.push('응시자: '+name);
+  lines.push('점수: '+d.score+' / 34');
+  Object.keys(d.sections).forEach(function(id){var s=d.sections[id];lines.push(s.label+': '+Number(s.got.toFixed(2))+' / '+s.total);});
+  lines.push('오답·부분 정답 문항: '+(d.ids.filter(function(no){return pointsFor(no)<1;}).map(function(no){return 'Q'+no;}).join(', ')||'없음'));
+  lines.push('COAVIA 자체 진단 점수이며 공인시험 점수가 아닙니다.');
+  return lines.join('\n');
+}
+function resultFullText(){
+  var d=resultData(),parts=[resultSummaryText(),'','전체 34문항 답안과 정답'];
+  d.ids.forEach(function(no){var p=pointsFor(no),it=ITEMS[no];parts.push('Q'+no+' ['+d.sections[d.map[no]].label+'] '+Number(p.toFixed(2))+'/1'+(p===1?' 정답':p>0?' 부분 정답':' 오답'));
+    parts.push('문제: '+it.stem_en+(it.sentence?' | '+it.sentence:''));
+    parts.push('내 답: '+studentText(no));parts.push('정답: '+answerText(no));parts.push('');
+  });
+  return parts.join('\n');
+}
+function showReportStatus(message){var el=document.getElementById('report-status');if(el)el.textContent=message;}
+function copyReport(){
+  var full=resultFullText();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(full).then(function(){showReportStatus('34문항 상세 결과를 복사했습니다. 이메일 본문에 붙여넣으세요 (Ctrl+V).');},function(){fallbackCopyReport(full);});
+  }else fallbackCopyReport(full);
+}
+function fallbackCopyReport(content){
+  var box=document.createElement('textarea');box.value=content;box.style.position='fixed';box.style.opacity='0';document.body.appendChild(box);box.select();
+  try{if(document.execCommand('copy'))showReportStatus('34문항 상세 결과를 복사했습니다.');else showReportStatus('복사할 수 없습니다. PDF 저장 기능을 이용해 주세요.');}
+  catch(err){showReportStatus('복사할 수 없습니다. PDF 저장 기능을 이용해 주세요.');}
+  document.body.removeChild(box);
+}
+function emailReport(){
+  var name=reportName()||'응시자';
+  var subject='[COAVIA Foundation Diagnostic] '+name+' 진단 결과';
+  var body=resultSummaryText()+'\n\n※ 문항별 내 답·정답은 결과 화면의 ‘전체 결과 복사’ 버튼으로 복사하여 이 메일에 붙여넣거나 PDF로 첨부할 수 있습니다.';
+  showReportStatus('메일 작성창이 열립니다. 받는 사람과 내용을 확인한 뒤 직접 전송해 주세요.');
+  window.location.href='mailto:coavia.info@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+function printReport(){
+  var reviews=document.getElementById('all-reviews');if(!reviews)return;
+  var pn=document.getElementById('print-student-name');if(pn)pn.textContent=reportName()?'응시자: '+reportName():'';
+  var oldVisible=reviews.classList.contains('visible');reviews.classList.add('visible');
+  var details=Array.from(reviews.querySelectorAll('details'));
+  var oldOpen=details.map(function(d){return d.open;});
+  details.forEach(function(d){d.open=true;});
+  showReportStatus('인쇄 화면에서 프린터를 ‘PDF로 저장’으로 선택할 수 있습니다.');
+  var revert=function(){details.forEach(function(d,i){d.open=oldOpen[i];});if(!oldVisible)reviews.classList.remove('visible');};
+  window.addEventListener('afterprint',revert,{once:true});
+  window.print();
+  // 일부 브라우저는 afterprint 이벤트가 발생하지 않습니다.
+}
+
 function render() {
   var app = document.getElementById('app'), h = '';
   if (resumeOffer) h = renderResume();
@@ -471,7 +563,10 @@ document.addEventListener('click', function (e) {
   var b = e.target.closest('[data-act]'); if (!b || b.tagName === 'INPUT' && b.type === 'radio') return;
   var a = b.getAttribute('data-act'), no = +b.getAttribute('data-no'), it = ITEMS[no];
   if (a === 'begin') { begin(); return; }
-  if (a === 'showreview') { var el=document.getElementById('all-reviews'); if(el){el.classList.add('visible'); el.scrollIntoView({behavior:'smooth',block:'start'});}return; }
+  if (a === 'emailreport') { emailReport(); return; }
+  if (a === 'copyreport') { copyReport(); return; }
+  if (a === 'printreport') { printReport(); return; }
+  if (a === 'showreview') { var el=document.getElementById('all-reviews'); if(el){el.classList.add('visible');b.setAttribute('aria-expanded','true');b.textContent='정답 목록 펼쳐짐';el.scrollIntoView({behavior:'smooth',block:'start'});}return; }
   if (a === 'resume') { resumeOffer = false; uStart = Date.now(); render(); return; }
   if (a === 'restart') { lsDel(STORE); S = fresh(); resumeOffer = false; render(); return; }
   if (a === 'play') { var id = b.getAttribute('data-id'); var u = curUnit(); if (id === 'SOUND') playClip('SOUND', 'Hello. This is a sound check. If you can hear this voice, press the button that says you can hear it.', 0); else if (u) playClip(id, u.tts, u.plays); return; }
