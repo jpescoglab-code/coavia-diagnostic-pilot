@@ -438,7 +438,7 @@ function renderDone(){
   var got=0;num.forEach(function(n){var p=pointsFor(n),s=bySec[UNITS.find(function(x){return x.items.some(function(i){return i.no===n;});}).sec];got+=p;s.got+=p;s.total++;});
   var score=Number(got.toFixed(2));
   var rows=Object.keys(bySec).map(function(id){var s=bySec[id];return '<span>'+s.label+'</span><strong>'+s.got+' / '+s.total+'</strong>';}).join('');
-  return `<div class="public-kicker">COAVIA DIAGNOSTIC RESULT</div><h1>진단을 마쳤습니다.</h1><div class="card result-card"><p class="result-label">나의 진단 점수</p><div class="result-score">${score}<span> / 34</span></div><p class="result-desc">총 34문항의 영역별 점수를 확인하세요. 이 점수는 COAVIA 자체 진단 점수이며 공식 시험 점수 또는 CEFR 등급이 아닙니다.</p><div class="section-scores">${rows}</div><div class="report-actions"><h2>결과 보내기 · 저장하기</h2><p>선생님에게 점수를 보내거나 34문항의 상세 결과를 보관할 수 있습니다.</p><label class="report-name" for="reportStudentName">이름 (선택) <input type="text" id="reportStudentName" autocomplete="name" maxlength="60" placeholder="결과에 표시할 이름"></label><div class="report-buttons"><button type="button" class="btn primary" data-act="emailreport">이메일로 보내기</button><button type="button" class="btn" data-act="copyreport">전체 결과 복사</button><button type="button" class="btn" data-act="printreport">PDF 저장 / 인쇄</button></div><p id="report-status" class="report-status" aria-live="polite"></p><p class="result-description">이메일 버튼은 메일 작성창을 열며 자동 발송하지 않습니다. 상세 답안 전체를 보내려면 ‘전체 결과 복사’ 후 메일 본문에 붙여넣거나 PDF를 첨부하세요.</p></div><div class="nav result-nav"><button type="button" class="btn" data-act="restart">다시 응시하기</button></div></div><div class="review-expander"><button type="button" class="btn primary" data-act="showreview" aria-expanded="false" aria-controls="all-reviews">34문항 정답 · 내 답 확인하기 ↓</button></div><section id="all-reviews" class="all-reviews"><h2>전체 정답 및 내 답 비교</h2><p class="sub">각 문항을 누르면 정답과 내가 선택한 답을 확인할 수 있습니다. 듣기 문제의 원문도 확인할 수 있습니다.</p>${num.map(renderReviewItem).join('')}</section>`;
+  return `<div class="public-kicker">COAVIA DIAGNOSTIC RESULT</div><h1>진단을 마쳤습니다.</h1><div class="card result-card"><p class="result-label">나의 진단 점수</p><div class="result-score">${score}<span> / 34</span></div><p class="result-desc">총 34문항의 영역별 점수를 확인하세요. 이 점수는 COAVIA 자체 진단 점수이며 공식 시험 점수 또는 CEFR 등급이 아닙니다.</p><div class="section-scores">${rows}</div><div class="report-actions"><h2>결과 보내기 · 저장하기</h2><p>선생님에게 점수를 보내거나 34문항의 상세 결과를 보관할 수 있습니다.</p><label class="report-name" for="reportStudentName">이름 (선택) <input type="text" id="reportStudentName" autocomplete="name" maxlength="60" placeholder="결과에 표시할 이름"></label><div class="report-buttons"><button type="button" class="btn primary" data-act="emailreport">Gmail로 보내기</button><button type="button" class="btn" data-act="copyreport">전체 결과 복사</button><button type="button" class="btn" data-act="printreport">PDF 저장 / 인쇄</button></div><p id="report-status" class="report-status" aria-live="polite"></p><p class="result-description">Gmail 작성창이 새 탭으로 열립니다. Gmail에 로그인하지 않았다면 로그인 화면이 먼저 나타날 수 있습니다. 메일은 자동 발송되지 않습니다. 34문항 상세 답안은 ‘전체 결과 복사’ 후 붙여넣거나 PDF로 첨부하세요.</p></div><div class="nav result-nav"><button type="button" class="btn" data-act="restart">다시 응시하기</button></div></div><div class="review-expander"><button type="button" class="btn primary" data-act="showreview" aria-expanded="false" aria-controls="all-reviews">34문항 정답 · 내 답 확인하기 ↓</button></div><section id="all-reviews" class="all-reviews"><h2>전체 정답 및 내 답 비교</h2><p class="sub">각 문항을 누르면 정답과 내가 선택한 답을 확인할 수 있습니다. 듣기 문제의 원문도 확인할 수 있습니다.</p>${num.map(renderReviewItem).join('')}</section>`;
 }
 
 /* 결과 공유: 외부 서버 전송 없이 학생의 명시적 동작으로만 공유합니다. */
@@ -488,8 +488,26 @@ function emailReport(){
   var name=reportName()||'응시자';
   var subject='[COAVIA Foundation Diagnostic] '+name+' 진단 결과';
   var body=resultSummaryText()+'\n\n※ 문항별 내 답·정답은 결과 화면의 ‘전체 결과 복사’ 버튼으로 복사하여 이 메일에 붙여넣거나 PDF로 첨부할 수 있습니다.';
-  showReportStatus('메일 작성창이 열립니다. 받는 사람과 내용을 확인한 뒤 직접 전송해 주세요.');
-  window.location.href='mailto:coavia.info@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  var params=new URLSearchParams({view:'cm',fs:'1',to:'coavia.info@gmail.com',su:subject,body:body});
+  var gmailUrl='https://mail.google.com/mail/?'+params.toString();
+  // 사용자 버튼 클릭 시 Gmail 작성창을 새 탭에서 직접 엽니다. 자동 전송하지 않습니다.
+  var tab=window.open(gmailUrl,'_blank');
+  if(tab){
+    try{tab.opener=null;}catch(err){}
+    showReportStatus('새 탭에서 Gmail을 열었습니다. 로그인 후 수신자와 내용을 확인하고 직접 보내세요.');
+  }else{
+    // 팝업 차단 시에도 사용자 클릭으로 이동할 수 있는 직접 링크를 제공합니다.
+    var status=document.getElementById('report-status');
+    if(status){
+      status.textContent='새 탭이 차단되었습니다. ';
+      var link=document.createElement('a');
+      link.href=gmailUrl;
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.textContent='Gmail 작성창 직접 열기';
+      status.appendChild(link);
+    }
+  }
 }
 function printReport(){
   var reviews=document.getElementById('all-reviews');if(!reviews)return;
