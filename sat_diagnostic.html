@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COAVIA SAT R&W Diagnostic Test 01</title>
+<style>
+  :root{
+    --navy:#12314f;
+    --teal:#1b7f83;
+    --amber:#b5651d;
+    --line:#e3e8ee;
+    --muted:#5b6472;
+    --bg:#f7f9fa;
+    --good:#1b7f6f;
+    --good-bg:#eaf6f2;
+    --bad:#b3392f;
+    --bad-bg:#fdf2f2;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    font-family:'Noto Sans KR','Noto Sans CJK KR',-apple-system,'Segoe UI',Arial,sans-serif;
+    background:var(--bg);
+    color:#1f2733;
+    line-height:1.65;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px;}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .brand{font-size:14px;font-weight:700;color:var(--navy);}
+  .brand span{color:var(--teal);}
+  .phase-pill{
+    font-size:12px;font-weight:700;color:#fff;background:var(--navy);
+    padding:5px 12px;border-radius:99px;letter-spacing:.3px;
+  }
+  .timer{
+    font-size:14px;font-weight:700;color:var(--teal);
+    border:1.5px solid var(--line);border-radius:8px;padding:5px 12px;
+    font-variant-numeric:tabular-nums;
+  }
+  .timer.low{color:var(--bad);border-color:#f0c4c0;}
+
+  .dots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+  .dot{
+    width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);
+    background:#fff;font-size:12px;font-weight:700;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  }
+  .dot.answered{border-color:var(--teal);color:var(--teal);background:#f2f8f8;}
+  .dot.current{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+  .intro{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:28px 26px;text-align:center;}
+  .intro .kicker{display:inline-block;background:var(--navy);color:#fff;font-size:12px;letter-spacing:1.5px;padding:6px 14px;border-radius:99px;margin-bottom:16px;}
+  .intro h1{font-size:22px;color:var(--navy);margin:0 0 8px;}
+  .intro p{font-size:14.5px;color:var(--muted);margin:0 0 20px;}
+  /* COAVIA Diagnostic shared 3-stat grid (Basic English / Foundation pattern) */
+  .intro .meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:24px 0 23px;text-align:left;}
+  .meta-chip{background:#f8f7f3;border:1px solid #eee9dd;border-radius:10px;padding:16px;min-width:0;color:var(--navy);}
+  .meta-chip .stat-label{display:block;font-size:12px;font-weight:600;line-height:1.4;color:#708096;margin-bottom:7px;}
+  .meta-chip .stat-value{display:block;font-size:16px;font-weight:800;line-height:1.4;color:#172d4e;letter-spacing:-.02em;}
+  .step-explain{text-align:left;background:#f2f8f8;border-radius:10px;padding:16px 18px;margin-bottom:22px;font-size:13px;color:var(--navy);}
+  .step-explain b{color:var(--teal);}
+  .step-explain div{margin-bottom:6px;}
+  .optional-fields{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center;}
+  .optional-fields input{
+    border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;
+    font-family:inherit;flex:1;min-width:140px;
+  }
+
+  .btn{display:inline-block;border:none;border-radius:10px;padding:13px 24px;font-size:14.5px;font-weight:700;cursor:pointer;}
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:#172d4e;color:#fff;}
+  .btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .btn:disabled{opacity:.45;cursor:default;}
+
+  .card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:24px 22px;}
+  .qnum-pill{display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;font-size:12px;font-weight:700;width:26px;height:26px;border-radius:50%;margin-right:8px;flex-shrink:0;}
+  .qhead{display:flex;align-items:center;margin-bottom:12px;}
+  .qlabel{font-size:14px;font-weight:700;color:var(--navy);}
+
+  .prev-answer-tag{
+    display:inline-block;font-size:12px;color:var(--muted);background:#f2f4f6;
+    border-radius:6px;padding:4px 10px;margin-bottom:12px;
+  }
+  .prev-answer-tag b{color:var(--navy);}
+
+  .passage{font-size:15.5px;margin:0 0 16px;}
+  .notes-list{margin:0 0 16px;padding-left:20px;font-size:15px;}
+  .notes-list li{margin-bottom:5px;}
+  .blank{letter-spacing:1px;}
+  .prompt{font-weight:600;color:var(--teal);font-size:14px;margin:0 0 16px;padding:10px 14px;background:#f2f8f8;border-radius:8px;}
+
+  table.data-table{width:100%;border-collapse:collapse;margin:2px 0 16px;font-size:13.5px;}
+  table.data-table th{background:var(--navy);color:#fff;padding:7px 9px;text-align:left;font-weight:600;}
+  table.data-table td{padding:7px 9px;border-bottom:1px solid var(--line);}
+  table.data-table tr:nth-child(even) td{background:#f7f9fa;}
+
+  .choices{display:flex;flex-direction:column;gap:10px;margin-bottom:6px;}
+  .choice{display:flex;align-items:flex-start;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14.5px;cursor:pointer;background:#fff;text-align:left;}
+  .choice:hover{border-color:var(--teal);}
+  .choice .letter{font-weight:700;color:var(--navy);flex-shrink:0;}
+  .choice.picked{border-color:var(--navy);background:#f2f8f8;}
+  .choice.picked .letter{color:var(--navy);}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:20px;gap:10px;}
+  .nav-row .side{display:flex;gap:10px;}
+
+  .dictionary-note{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--amber);
+    background:#fbf1e6;border-radius:8px;padding:8px 12px;margin-bottom:16px;font-weight:600;
+  }
+
+  /* results */
+  .step-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;}
+  .step-score-card{background:#f2f8f8;border-radius:12px;padding:16px 10px;text-align:center;}
+  .step-score-card .lbl{font-size:11.5px;color:var(--teal);font-weight:700;margin-bottom:6px;}
+  .step-score-card .val{font-size:24px;font-weight:800;color:var(--navy);}
+  .step-score-card .band{font-size:11.5px;color:var(--amber);margin-top:4px;line-height:1.4;}
+
+  .section-title{font-size:15px;color:var(--navy);font-weight:700;margin:26px 0 12px;}
+  .domain-row{
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--line);padding:10px 2px;font-size:13.5px;
+  }
+  .domain-row:last-child{border-bottom:none;}
+  .domain-row .name{color:var(--navy);font-weight:600;}
+  .domain-row .frac{color:var(--muted);}
+
+  .q-status-list{display:flex;flex-direction:column;gap:8px;}
+  .q-status-row{
+    display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;
+    padding:10px 12px;font-size:13px;
+  }
+  .q-status-row .qn{font-weight:700;color:var(--navy);width:30px;flex-shrink:0;}
+  .q-status-row .skill{color:var(--muted);flex:1;}
+  .badge{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap;}
+  .badge.step1{background:var(--good-bg);color:var(--good);}
+  .badge.step2{background:#eef4fb;color:#2a5f9e;}
+  .badge.step3{background:#fbf1e6;color:var(--amber);}
+  .badge.unstable{background:#f3ecfb;color:#6b3fa0;}
+  .badge.never{background:var(--bad-bg);color:var(--bad);}
+
+  .warn-banner{
+    display:flex;align-items:center;gap:8px;font-size:13px;color:var(--bad);
+    background:var(--bad-bg);border:1.5px solid #e8b4b0;border-radius:8px;
+    padding:10px 14px;margin-bottom:16px;
+  }
+
+  .subnote-box{background:#f2f8f8;border-radius:10px;padding:14px 16px;margin:14px 0 22px;font-size:13px;color:var(--navy);line-height:1.8;}
+  .subnote-box b{color:var(--teal);}
+
+  .caveat{font-size:12.5px;color:var(--muted);background:#fdf2f2;border:1.5px solid #e8b4b0;border-radius:10px;padding:12px 14px;margin:22px 0;line-height:1.7;}
+  .cta-box{border:1.5px solid var(--line);border-radius:14px;padding:22px 20px;text-align:center;}
+  .cta-box h3{font-size:16px;color:var(--navy);margin:0 0 8px;}
+  .cta-box p{font-size:13.5px;color:var(--muted);margin:0 0 18px;}
+  .cta-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+  .footer-note{text-align:center;font-size:12px;color:#9aa4b1;margin-top:24px;}
+  [hidden]{display:none!important;}
+  @media (max-width:480px){
+    .intro .meta{grid-template-columns:1fr;gap:8px;margin:20px 0;}
+    .meta-chip{padding:12px 14px;}
+    .meta-chip .stat-label{margin-bottom:3px;}
+    .intro h1{font-size:19px;}
+    .card{padding:18px 14px;}
+    .step-scores{grid-template-columns:1fr;}
+  }
+
+  /* COAVIA shared frame - review only */
+  .top{border-radius:14px 14px 0 0; background:#172d4e; color:#fff; padding:17px 22px; border-bottom:2px solid #c99b4a; align-items:center; margin-bottom:18px; flex-wrap:wrap;}
+  .coavia-head-brand{display:flex;flex-direction:column;align-items:center;line-height:1.25;gap:3px; min-width:120px;}
+  .coavia-head-brand strong{font-family:Georgia,serif;letter-spacing:.07em;font-size:23px;color:white;}
+  .coavia-head-brand small{font-size:10px;font-weight:700;color:#e7edf4;}
+  .coavia-head-links{display:flex;gap:8px;flex-wrap:wrap;}
+  .coavia-head-links a{display:inline-block;color:white;border:1px solid #70829c;border-radius:8px;padding:8px 11px;text-decoration:none;font-size:12px;font-weight:700;}
+  .coavia-head-links a:hover{background:#2b476d;}
+  .sat-phase{display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px;}
+  .sat-phase[hidden]{display:none!important;}
+  .sat-result-details{border:1.5px solid var(--line);border-radius:12px;margin-top:18px;padding:12px 15px;}
+  .sat-result-details summary{cursor:pointer;font-weight:800;color:var(--navy);}
+  .sat-answer-item{padding:11px 0;border-bottom:1px solid #e6eaf0;font-size:13px;}
+  .sat-answer-item:last-child{border-bottom:0;}
+  .sat-answer-item p{margin:4px 0;line-height:1.5;}
+  .sat-answer-item .sat-correct{font-weight:700;color:#14624c;}
+  @media(max-width:600px){.top{padding:14px 12px}.coavia-head-links a{font-size:11px;padding:8px}.cta-actions .btn{width:100%;}}
+  @media print{.top,.sat-phase,.cta-actions,.dots,#intro,#quizCard,.sat-result-details summary{display:none!important;}.wrap{max-width:100%;padding:0;}body{background:#fff;}#results{display:block!important;border:0!important;} .sat-result-details{display:block;} .sat-result-details > div{display:block!important;} .footer-note{font-size:9px;}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div class="coavia-head-brand" aria-label="COAVIA 인지 기반 영어 학습"><strong>COAVIA</strong><small>인지 기반 영어 학습</small></div>
+    <div class="coavia-head-links">
+      <a href="https://coavia.kr/diagnostic/">← 진단검사 목록</a>
+      <a href="https://coavia.kr/">COAVIA 홈</a>
+    </div>
+  </div>
+  <div id="phaseArea" class="sat-phase" hidden>
+    <span class="phase-pill" id="phasePill">STEP 1</span>
+    <span class="timer" id="timerBox">13:00</span>
+  </div>
+
+  <div class="dots" id="dotsArea" hidden></div>
+
+  <!-- INTRO -->
+  <div class="intro" id="intro">
+    <div class="kicker">FREE DIAGNOSTIC · 3-STEP</div>
+    <h1>SAT R&amp;W Diagnostic Test 01</h1>
+    <p>같은 10문항을 세 단계로 반복해서 풀며, 답이 바뀌는 과정 자체를 진단합니다.</p>
+    <div class="meta" aria-label="진단검사 기본 정보">
+      <div class="meta-chip"><span class="stat-label">문항 수</span><strong class="stat-value">10문항 · 실전 유형</strong></div>
+      <div class="meta-chip"><span class="stat-label">STEP 1 소요 시간</span><strong class="stat-value">13분</strong></div>
+      <div class="meta-chip"><span class="stat-label">진단 방식</span><strong class="stat-value">3단계 · 변화 추적</strong></div>
+    </div>
+    <div class="step-explain">
+      <div><b>STEP 1</b> — 사전·검색 없이 13분. 지금 낼 수 있는 실전 점수.</div>
+      <div><b>STEP 2</b> — 같은 문제를 15분 더 고민. 시간·전략 문제인지 확인.</div>
+      <div><b>STEP 3</b> — 사전을 찾아가며 마지막으로 수정. 어휘 문제인지 확인.</div>
+    </div>
+    <div class="optional-fields">
+      <input type="text" id="nameInput" placeholder="이름 (선택)">
+    </div>
+    <button class="btn btn-primary" onclick="startQuiz()">진단 시작 →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="card" id="quizCard" hidden>
+    <div id="dictNote" class="dictionary-note" hidden>📖 사전 사용 가능 — 모르는 단어를 찾아가며 마지막으로 답을 수정하세요.</div>
+    <div id="warnBanner" class="warn-banner" hidden></div>
+    <div id="questionArea"></div>
+    <div class="nav-row">
+      <div class="side">
+        <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()">← 이전</button>
+        <button class="btn btn-outline" id="nextBtn" onclick="nextQuestion()">다음 →</button>
+      </div>
+      <button class="btn btn-primary" id="submitStepBtn" onclick="submitStep()"></button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card" id="results" hidden>
+    <h2 style="font-size:18px;color:var(--navy);margin:0 0 4px;" id="resultsHeading">진단 결과</h2>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 18px;" id="resultsName"></p>
+
+    <div class="step-scores">
+      <div class="step-score-card"><div class="lbl">STEP 1 · 현재 실전 수준</div><div class="val" id="s1val">0/10</div><div class="band" id="s1band"></div></div>
+      <div class="step-score-card"><div class="lbl">STEP 2 · 3~6개월 성장 가능성</div><div class="val" id="s2val">0/10</div><div class="band" id="s2band"></div></div>
+      <div class="step-score-card"><div class="lbl">STEP 3 · 6~12개월 성장 가능성</div><div class="val" id="s3val">0/10</div><div class="band" id="s3band"></div></div>
+    </div>
+    <div class="subnote-box" style="margin-top:-8px;">
+      <b>STEP 2</b>는 추가 시간과 전략 훈련을 통해 기대할 수 있는 수준, <b>STEP 3</b>는 어휘와 독해 기반을 보완했을 때 기대할 수 있는 수준을 뜻합니다. 학습 기간별 점수는 응답 변화와 COAVIA의 지도 경험을 바탕으로 한 성장 가능성 추정치이며, 실제 성취도는 학습량과 학습 방식에 따라 달라질 수 있습니다.
+    </div>
+
+    <div class="subnote-box" id="q8note" hidden></div>
+
+    <div class="section-title">영역별 분석</div>
+    <div id="domainArea"></div>
+
+    <div class="section-title">문항별 진단</div>
+    <div class="q-status-list" id="qStatusArea"></div>
+
+    <div class="caveat">
+      이 결과는 10문항 약식 테스트의 추정치입니다. 실제 디지털 SAT는 54문항 2모듈 적응형 채점으로 산출 방식이 다르므로, 정확한 점수 예측이 아닌 대략적인 참고 자료로 봐주세요.
+    </div>
+
+    <div class="cta-box">
+      <h3>이 결과, 그대로 보내주세요</h3>
+      <p>검사 결과를 COAVIA에 보내거나 복사하여 보관할 수 있습니다. 이메일은 Gmail 작성창에서 직접 보내기를 누르면 발송됩니다.</p>
+      <div class="cta-actions">
+        <button type="button" class="btn btn-primary" onclick="shareSatEmail()">Gmail로 결과 보내기</button>
+        <button type="button" class="btn btn-outline" onclick="copySatReport()">전체 결과 복사</button>
+        <button type="button" class="btn btn-outline" onclick="window.print()">PDF 저장 / 인쇄</button>
+        <button class="btn btn-outline" onclick="restartQuiz()">처음부터 다시 풀기</button>
+      </div>
+    </div>
+    <details class="sat-result-details" id="satDetailedAnswers">
+      <summary>10문항 정답과 단계별 내 답 확인하기</summary>
+      <div id="satDetailedAnswerContent"></div>
+    </details>
+  </div>
+
+  <div class="footer-note">COAVIA · Think Better, Achieve Better. · info@coavia.kr</div>
+</div>
+
+<script>
+const DOMAIN_LABEL = {wic:'Words in Context', tr:'Transitions', gr:'Grammar', rs:'Rhetorical Synthesis', ev:'Evidence & Data'};
+
+const QUESTIONS = [
+  { domain:'wic',
+    passage: 'The museum\'s first catalog of the newly discovered letters was necessarily <span class="blank">________</span>: several documents had not yet been authenticated, and the editors expected to revise multiple entries as new evidence emerged.',
+    prompt: 'Which choice completes the text with the most logical and precise word or phrase?',
+    choices: ['definitive','provisional','exhaustive','redundant'], correct: 1,
+    skill: 'Words in Context — 정밀 어휘 선택',
+    explain: '아직 인증되지 않은 문서가 있고 항목을 계속 수정할 예정이므로 "잠정적(provisional)"이 정답입니다.'
+  },
+  { domain:'tr',
+    passage: 'Most flowering plants open their stomata during the day to take in carbon dioxide. Certain cactus species, <span class="blank">________</span>, keep their stomata closed during the day and open them at night, when temperatures are lower.',
+    prompt: 'Which choice completes the text with the most logical transition?',
+    choices: ['similarly','for example','therefore','by contrast'], correct: 3,
+    skill: 'Transitions — 논리적 대조 관계',
+    explain: '두 문장은 대조 관계이므로 by contrast가 정답입니다.'
+  },
+  { domain:'gr',
+    passage: 'Using sediment cores from three alpine lakes, <span class="blank">________</span>.',
+    prompt: 'Which choice completes the text so that it conforms to the conventions of Standard English?',
+    choices: [
+      'the region\'s climate history was reconstructed over a period of 2,000 years',
+      'evidence of repeated droughts became visible in the mineral layers',
+      'researchers reconstructed the region\'s climate history over a period of 2,000 years',
+      'the mineral layers provided evidence of repeated droughts'
+    ], correct: 2,
+    skill: 'Grammar — 분사구문의 논리적 주어',
+    explain: '문두의 분사구 바로 뒤에는 그 행위를 한 주체(researchers)가 와야 자연스럽습니다.'
+  },
+  { domain:'wic',
+    passage: 'The committee\'s report did not reject the earlier study outright; rather, it sought to <span class="blank">________</span> the study\'s broadest conclusion by showing that the effect disappeared under more controlled conditions.',
+    prompt: 'Which choice completes the text with the most logical and precise word or phrase?',
+    choices: ['corroborate','qualify','replicate','publicize'], correct: 1,
+    skill: 'Words in Context — 논증의 방향성',
+    explain: '결론을 뒤엎지 않으면서 범위를 좁히는 qualify(한정하다)가 정답입니다.'
+  },
+  { domain:'ev',
+    passage: 'Some historians have argued that the sharp decline in handwritten household account books after 1850 reflects declining literacy among working families. Historian Eva Moreno points out, however, that factory-produced printed ledgers became much cheaper during the same period. In a sample of 300 working-class households, families that stopped using homemade account books were especially likely to begin using commercially printed ledgers instead.',
+    prompt: 'Which choice best describes the function of the evidence in the final sentence?',
+    choices: [
+      'It provides evidence consistent with Moreno\'s alternative explanation by showing that many families replaced one form of written record keeping with another.',
+      'It demonstrates that lower ledger prices caused working-class families to keep financial records more regularly than they had before.',
+      'It weakens Moreno\'s explanation by showing that printed ledgers were adopted mainly by families that had already stopped keeping written records.',
+      'It suggests that the decline of homemade account books reflected a preference for standardized financial language rather than a change in literacy.'
+    ], correct: 0,
+    skill: 'Evidence & Data — 증거의 기능 파악',
+    explain: '기록 방식의 전환을 보여주는 증거는 Moreno의 대안 설명을 뒷받침합니다.'
+  },
+  { domain:'rs',
+    passage: 'While researching animal behavior, a student has taken the following notes:',
+    notes: [
+      'A 2019 study found that urban red foxes were more active at night than rural red foxes.',
+      'A 2025 follow-up study examined the same species in smaller, quieter cities.',
+      'In those cities, foxes showed a much smaller shift toward nighttime activity.',
+      'Researchers proposed that the level of human disturbance, rather than urban habitat alone, may influence when foxes are active.'
+    ],
+    prompt: 'The student wants to emphasize how the follow-up study qualifies the interpretation of the 2019 study. Which choice most effectively uses relevant information from the notes to accomplish this goal?',
+    choices: [
+      'Both studies examined red foxes, a species that can live successfully in both urban and rural environments.',
+      'The 2019 study demonstrated that living in an urban environment directly causes red foxes to become nocturnal.',
+      'The 2025 study found that red foxes living in small cities behaved exactly like foxes living in rural areas.',
+      'Although the 2019 study associated urban living with greater nighttime activity, the 2025 study suggests that the degree of human disturbance may help explain that pattern.'
+    ], correct: 3,
+    skill: 'Rhetorical Synthesis — 노트 정보 결합',
+    explain: '2019년 해석을 인정하면서 2025년 연구가 그 해석에 제한을 두는 구조가 정답입니다.'
+  },
+  { domain:'gr',
+    passage: 'Three letters previously attributed to the poet<span class="blank">________</span>each bearing a watermark that did not come into use until nearly twenty years after her death, were removed from the exhibition after conservators questioned their authenticity.',
+    prompt: 'Which choice completes the text so that it conforms to the conventions of Standard English?',
+    choices: [',',';',':','—'], correct: 0,
+    skill: 'Grammar — 비제한적 삽입구 구두점',
+    explain: '문장 뒤쪽 콤마와 짝을 맞추기 위해 앞에도 콤마가 와야 합니다.'
+  },
+  { domain:'ev',
+    passage: 'Urban planner Renata Voss hypothesizes that increased tree canopy cover lowers afternoon air temperatures in residential neighborhoods during summer months. She compiled canopy cover and average afternoon temperature data from four neighborhoods in the same city, all measured during the same two-week period.',
+    table: { headers:['Neighborhood','Tree Canopy Cover','Avg. Summer Afternoon Temp.'],
+      rows:[['Elmwood','14%','96.8°F'],['Fairview','33%','93.1°F'],['Cedar Park','47%','94.0°F'],['Brookside','68%','89.6°F']] },
+    prompt: 'Which choice best describes how the data relate to Voss\'s hypothesis?',
+    choices: [
+      'The data fully support Voss\'s hypothesis because each increase in canopy cover corresponds to a decrease in afternoon temperature.',
+      'The data generally support Voss\'s hypothesis, although Cedar Park\'s temperature is slightly higher than Fairview\'s despite its greater canopy cover.',
+      'The data contradict Voss\'s hypothesis because the neighborhood with the greatest canopy cover also recorded the highest temperature.',
+      'The data provide no support for Voss\'s hypothesis because canopy cover varies substantially among the four neighborhoods.'
+    ], correct: 1,
+    skill: 'Evidence & Data — 전체 경향과 예외 함께 읽기',
+    explain: '전체적으로는 지지하지만 Cedar Park가 예외입니다. 이 둘을 함께 짚은 선택지가 정답입니다.'
+  },
+  { domain:'ev',
+    passage: 'Economist Nia Patel proposes that increasing bus frequency can raise nearby retail foot traffic even when routes and fares do not change. In one city, neighborhoods where average wait times fell from 20 to 10 minutes experienced a 12 percent increase in weekday retail visits, while otherwise similar neighborhoods whose bus frequency remained unchanged showed no measurable increase.',
+    prompt: 'Which additional finding, if true, would most strongly support Patel\'s proposal?',
+    choices: [
+      'The neighborhoods receiving more frequent bus service had already been experiencing faster retail growth before the change in bus schedules.',
+      'Retailers in the neighborhoods receiving more frequent bus service increased their advertising spending during the same period.',
+      'The increase in retail visits began immediately after the schedule change and was concentrated within a short walking distance of the affected bus stops, while citywide employment remained stable.',
+      'In surveys, many passengers using the more frequent buses reported that they found public transportation more convenient than before.'
+    ], correct: 2,
+    skill: 'Evidence & Data — 근거로 주장 강화하기',
+    explain: '시점·근접성·다른 변수 통제를 모두 만족해 인과관계를 가장 강하게 뒷받침합니다.'
+  },
+  { domain:'ev',
+    passage: 'Archaeologist Luis Herrera argues that standardized pottery designs found in widely separated river settlements spread through traveling craftspeople rather than through centralized political control. Excavations have revealed no shared administrative symbols across the settlements. Clay analysis, however, shows that a small percentage of vessels at each site were made from clay sources located near other settlements.',
+    prompt: 'Which finding, if true, would most strongly support Herrera\'s explanation?',
+    choices: [
+      'The largest settlements contain a greater variety of pottery designs than the smaller settlements do.',
+      'Similar decorative motifs appear on both storage vessels and cooking vessels throughout the region.',
+      'Vessels made from clay imported from other settlements are among the most elaborately decorated objects at each site.',
+      'At several settlements, vessels made from local clay display shaping techniques characteristic of distant settlements and absent from older local pottery.'
+    ], correct: 3,
+    skill: 'Evidence & Data — 가설을 뒷받침하는 근거 찾기',
+    explain: '현지 점토인데도 다른 지역 기법이 나타난다면 "장인의 이동" 가설을 직접 뒷받침합니다.'
+  }
+];
+
+const STEP_TIME = { step1: 13*60, step2: 15*60, step3: 0 };
+const STEP_LABEL = { step1:'STEP 1', step2:'STEP 2', step3:'STEP 3' };
+
+let phase = 'intro';
+let current = 0;
+let timerId = null;
+let timeLeft = 0;
+let studentName = '';
+const answers = { step1: Array(10).fill(null), step2: Array(10).fill(null), step3: Array(10).fill(null) };
+
+function startQuiz(){
+  studentName = document.getElementById('nameInput').value.trim();
+  document.getElementById('intro').hidden = true;
+  goToStep('step1');
+}
+
+function goToStep(step){
+  phase = step;
+  current = 0;
+  if (step === 'step2') answers.step2 = answers.step1.slice();
+  if (step === 'step3') answers.step3 = answers.step2.slice();
+
+  document.getElementById('quizCard').hidden = false;
+  document.getElementById('phaseArea').hidden = false;
+  document.getElementById('dotsArea').hidden = false;
+  document.getElementById('dictNote').hidden = (step !== 'step3');
+  document.getElementById('warnBanner').hidden = true;
+  document.getElementById('phasePill').textContent = STEP_LABEL[step];
+  document.getElementById('submitStepBtn').textContent = step === 'step3' ? '결과 보기 →' : (STEP_LABEL[step] + ' 제출하기 →');
+
+  clearInterval(timerId);
+  if (STEP_TIME[step] > 0){
+    timeLeft = STEP_TIME[step];
+    document.getElementById('timerBox').hidden = false;
+    updateTimerDisplay();
+    timerId = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0){
+        clearInterval(timerId);
+        submitStep(true);
+      }
+    }, 1000);
+  } else {
+    document.getElementById('timerBox').hidden = true;
+  }
+
+  renderDots();
+  renderQuestion();
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60), s = timeLeft%60;
+  const box = document.getElementById('timerBox');
+  box.textContent = m + ':' + String(s).padStart(2,'0');
+  box.classList.toggle('low', timeLeft <= 60);
+}
+
+function renderDots(){
+  const arr = answers[phase];
+  let html = '';
+  for (let i=0;i<10;i++){
+    const cls = ['dot'];
+    if (i === current) cls.push('current');
+    if (arr[i] !== null) cls.push('answered');
+    html += '<div class="' + cls.join(' ') + '" onclick="jumpTo(' + i + ')">' + (i+1) + '</div>';
+  }
+  document.getElementById('dotsArea').innerHTML = html;
+}
+
+function jumpTo(i){ current = i; renderQuestion(); }
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  let html = '<div class="qhead"><span class="qnum-pill">' + (current+1) + '</span><span class="qlabel">Question ' + String(current+1).padStart(2,'0') + '</span></div>';
+
+  if (phase !== 'step1'){
+    const prevStep = phase === 'step2' ? 'step1' : 'step2';
+    const prevIdx = answers[prevStep][current];
+    const letters = ['A','B','C','D'];
+    if (prevIdx !== null){
+      html += '<div class="prev-answer-tag">이전 단계 선택: <b>' + letters[prevIdx] + '</b></div>';
+    }
+  }
+
+  html += '<p class="passage">' + q.passage + '</p>';
+  if (q.notes) html += '<ul class="notes-list">' + q.notes.map(n => '<li>' + n + '</li>').join('') + '</ul>';
+  if (q.table){
+    html += '<table class="data-table"><tr>' + q.table.headers.map(h => '<th>'+h+'</th>').join('') + '</tr>';
+    html += q.table.rows.map(r => '<tr>' + r.map(c => '<td>'+c+'</td>').join('') + '</tr>').join('') + '</table>';
+  }
+  html += '<p class="prompt">' + q.prompt + '</p>';
+  html += '<div class="choices" id="choicesArea">';
+  const letters = ['A','B','C','D'];
+  const picked = answers[phase][current];
+  q.choices.forEach((c, i) => {
+    const sel = picked === i ? ' picked' : '';
+    html += '<button class="choice' + sel + '" data-idx="' + i + '" onclick="pickChoice(' + i + ')"><span class="letter">' + letters[i] + ')</span><span>' + c + '</span></button>';
+  });
+  html += '</div>';
+
+  document.getElementById('questionArea').innerHTML = html;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === 9;
+}
+
+function pickChoice(i){
+  answers[phase][current] = i;
+  renderQuestion();
+  renderDots();
+}
+
+function prevQuestion(){ if (current>0){ current--; renderQuestion(); renderDots(); } }
+function nextQuestion(){ if (current<9){ current++; renderQuestion(); renderDots(); } }
+
+function submitStep(auto){
+  if (!auto){
+    const unanswered = [];
+    answers[phase].forEach((a,i) => { if (a === null) unanswered.push(i+1); });
+    if (unanswered.length){
+      const banner = document.getElementById('warnBanner');
+      banner.hidden = false;
+      banner.textContent = '아직 풀지 않은 문제가 있습니다 (Q' + unanswered.join(', Q') + '). 모두 응답한 뒤 제출해 주세요.';
+      jumpTo(unanswered[0] - 1);
+      return;
+    }
+  }
+  document.getElementById('warnBanner').hidden = true;
+  clearInterval(timerId);
+  if (phase === 'step1') goToStep('step2');
+  else if (phase === 'step2') goToStep('step3');
+  else showResults();
+}
+
+function scoreOf(step){
+  return answers[step].reduce((sum, a, i) => sum + (a === QUESTIONS[i].correct ? 1 : 0), 0);
+}
+
+function bandOf(score){
+  if (score <= 4) return '500점 이하 추정';
+  if (score <= 6) return '500점대 추정';
+  if (score === 7) return '600점대 초중반 추정';
+  if (score === 8) return '600점대 초중반~후반 (아래 참고)';
+  if (score === 9) return '600점대 후반 ~ 700점대 진입 추정';
+  return '700점대 초반 진입 잠재력';
+}
+
+function q8NoteFor(step){
+  const idx = [7,8,9];
+  const correctCount = idx.filter(i => answers[step][i] === QUESTIONS[i].correct).length;
+  const total = scoreOf(step);
+  if (total !== 8) return null;
+  if (correctCount >= 3) return STEP_LABEL[step] + ': Q8·9·10 중 3개 모두 정답 → 600점대 후반 ~ 700점대 진입 추정';
+  if (correctCount === 2) return STEP_LABEL[step] + ': Q8·9·10 중 2개 정답 → 600점대 중후반 추정';
+  return STEP_LABEL[step] + ': Q8·9·10 중 1개 정답 → 600점대 초중반 추정';
+}
+
+function statusOf(i){
+  const s1 = answers.step1[i] === QUESTIONS[i].correct;
+  const s2 = answers.step2[i] === QUESTIONS[i].correct;
+  const s3 = answers.step3[i] === QUESTIONS[i].correct;
+  // a correct answer that later turns wrong is flagged before any "gained" pattern
+  const regressed = (s1 && !s2) || (s2 && !s3);
+  if (regressed) return 'unstable';
+  if (s1) return 'step1';
+  if (s2) return 'step2';
+  if (s3) return 'step3';
+  return 'never';
+}
+
+const STATUS_LABEL = {
+  step1: '정답 → 정답 → 정답 — 확실히 갖춘 실력',
+  step2: '오답 → 정답 → 정답 — 시간·전략 문제',
+  step3: '오답 → 오답 → 정답 — 어휘 부족 가능성',
+  unstable: '한때 정답 → 다시 오답 — 불안정한 이해',
+  never: '끝까지 오답 — 개념·추론 재학습 필요'
+};
+
+function showResults(){
+  clearInterval(timerId);
+  document.getElementById('quizCard').hidden = true;
+  document.getElementById('phaseArea').hidden = true;
+  document.getElementById('dotsArea').hidden = true;
+  document.getElementById('results').hidden = false;
+
+  document.getElementById('resultsName').textContent = studentName ? (studentName + '님의 결과') : '';
+
+  const s1 = scoreOf('step1'), s2 = scoreOf('step2'), s3 = scoreOf('step3');
+  document.getElementById('s1val').textContent = s1 + '/10';
+  document.getElementById('s2val').textContent = s2 + '/10';
+  document.getElementById('s3val').textContent = s3 + '/10';
+  document.getElementById('s1band').textContent = bandOf(s1);
+  document.getElementById('s2band').textContent = bandOf(s2);
+  document.getElementById('s3band').textContent = bandOf(s3);
+
+  const notes = ['step1','step2','step3'].map(q8NoteFor).filter(Boolean);
+  const q8box = document.getElementById('q8note');
+  if (notes.length){
+    q8box.hidden = false;
+    q8box.innerHTML = '<b>고난도 문항(Q8·9·10) 세부 구간</b><br>' + notes.join('<br>');
+  } else {
+    q8box.hidden = true;
+  }
+
+  const domainStats = {};
+  QUESTIONS.forEach((q,i) => {
+    if (!domainStats[q.domain]) domainStats[q.domain] = {total:0, s1:0, final:0};
+    domainStats[q.domain].total++;
+    if (answers.step1[i] === q.correct) domainStats[q.domain].s1++;
+    if (answers.step3[i] === q.correct) domainStats[q.domain].final++;
+  });
+  let domHtml = '';
+  Object.keys(DOMAIN_LABEL).forEach(key => {
+    if (!domainStats[key]) return;
+    const d = domainStats[key];
+    domHtml += '<div class="domain-row"><span class="name">' + DOMAIN_LABEL[key] + '</span><span class="frac">STEP1 ' + d.s1 + '/' + d.total + ' → 최종 ' + d.final + '/' + d.total + '</span></div>';
+  });
+  document.getElementById('domainArea').innerHTML = domHtml;
+
+  let qHtml = '';
+  QUESTIONS.forEach((q,i) => {
+    const st = statusOf(i);
+    qHtml += '<div class="q-status-row"><span class="qn">Q' + (i+1) + '</span><span class="skill">' + q.skill + '</span><span class="badge ' + st + '">' + STATUS_LABEL[st] + '</span></div>';
+  });
+  document.getElementById('qStatusArea').innerHTML = qHtml;
+  renderSatDetailedAnswers();
+}
+
+function satHtmlEscape(v){return String(v??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+function satReportText(){
+  const name=studentName || '미입력';
+  const lines=[`COAVIA SAT R&W Diagnostic Test 01`, `이름: ${name}`, `받는 곳: info@coavia.kr`,
+    `STEP 1: ${scoreOf('step1')} / 10`, `STEP 2: ${scoreOf('step2')} / 10`, `STEP 3: ${scoreOf('step3')} / 10`,
+    ``, `문항별 정답과 단계별 응답`];
+  const letters='ABCD';
+  QUESTIONS.forEach((q,i)=>{
+    const as=step=>answers[step][i]===null?'미응답':letters[answers[step][i]];
+    lines.push(`Q${i+1} ${q.skill} | 정답 ${letters[q.correct]} | STEP1 ${as('step1')} / STEP2 ${as('step2')} / STEP3 ${as('step3')}`);
+  });
+  lines.push('', 'COAVIA 자체 진단 결과로 공식 SAT 점수가 아닙니다.');
+  return lines.join('\n');
+}
+function shareSatEmail(){
+  const subject='[COAVIA SAT R&W Diagnostic] '+(studentName?studentName+' · ':'')+'3단계 진단 결과';
+  const url='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent('info@coavia.kr')+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(satReportText());
+  const tab=window.open(url,'_blank','noopener,noreferrer');
+  if(!tab){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Gmail 작성창 열기';a.className='btn btn-outline';a.style.margin='12px';document.querySelector('.cta-actions').appendChild(a);}
+}
+async function copySatReport(){
+  const report=satReportText();
+  try{await navigator.clipboard.writeText(report);alert('전체 진단 결과가 복사되었습니다.');}
+  catch(e){const ta=document.createElement('textarea');ta.value=report;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('전체 진단 결과 복사를 시도했습니다. 붙여넣기를 확인해 주세요.');}
+}
+function renderSatDetailedAnswers(){
+  const L='ABCD';
+  document.getElementById('satDetailedAnswerContent').innerHTML=QUESTIONS.map((q,i)=>{
+    const part=step=>answers[step][i]===null?'미응답':L[answers[step][i]];
+    return `<div class="sat-answer-item"><strong>Q${i+1}. ${satHtmlEscape(q.skill)}</strong><p class="sat-correct">정답: ${L[q.correct]}. ${satHtmlEscape(q.choices[q.correct])}</p><p>내 답: STEP 1 ${part('step1')} · STEP 2 ${part('step2')} · STEP 3 ${part('step3')}</p><p>${satHtmlEscape(q.explain)}</p></div>`;
+  }).join('');
+}
+
+function restartQuiz(){
+  answers.step1 = Array(10).fill(null);
+  answers.step2 = Array(10).fill(null);
+  answers.step3 = Array(10).fill(null);
+  current = 0; phase = 'intro';
+  document.getElementById('results').hidden = true;
+  document.getElementById('intro').hidden = false;
+}
+</script>
+
+</body>
+</html>
